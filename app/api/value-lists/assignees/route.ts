@@ -18,6 +18,7 @@ export async function GET() {
 
   const response = await fetch(
     `${TICKET_HUB_API_URL}/search-for-value-lists/assignees`,
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   const data = await response.json();
 

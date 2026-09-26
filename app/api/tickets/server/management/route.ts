@@ -62,7 +62,10 @@ export async function POST(request: Request) {
     `${TICKET_HUB_API_URL}/tickets/server/management`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
         informer: payload.email,
         assignee: body.assignee,
@@ -101,6 +104,7 @@ export async function GET() {
 
   const ticketHubResponse = await fetch(
     `${TICKET_HUB_API_URL}/tickets/server/management`,
+    { headers: { Authorization: `Bearer ${token}` } },
   );
 
   const data = await ticketHubResponse.json();

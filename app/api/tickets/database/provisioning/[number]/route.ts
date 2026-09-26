@@ -37,6 +37,7 @@ export async function GET(
 
   const ticketHubResponse = await fetch(
     `${TICKET_HUB_API_URL}/tickets/database/provisioning/${number}`,
+    { headers: { Authorization: `Bearer ${token}` } },
   );
 
   const data = await ticketHubResponse.json();
