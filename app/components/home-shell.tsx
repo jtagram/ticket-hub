@@ -11,6 +11,9 @@ import { DatabaseProvisioningTicketSearch } from "@/app/components/database-prov
 import { ServerManagementTicketForm } from "@/app/components/server-management-ticket-form";
 import { ServerManagementTicketList } from "@/app/components/server-management-ticket-list";
 import { ServerManagementTicketSearch } from "@/app/components/server-management-ticket-search";
+import { KubernetesManifestTicketForm } from "@/app/components/kubernetes-manifest-ticket-form";
+import { KubernetesManifestTicketList } from "@/app/components/kubernetes-manifest-ticket-list";
+import { KubernetesManifestTicketSearch } from "@/app/components/kubernetes-manifest-ticket-search";
 
 interface HomeShellProps {
   informerEmail: string;
@@ -71,6 +74,15 @@ export function HomeShell({ informerEmail }: HomeShellProps) {
         )}
         {selected === "search-server-management-ticket" && (
           <ServerManagementTicketSearch />
+        )}
+        {selected === "request-kubernetes-manifest" && (
+          <KubernetesManifestTicketForm informerEmail={informerEmail} />
+        )}
+        {selected === "view-kubernetes-manifest-tickets" && (
+          <KubernetesManifestTicketList />
+        )}
+        {selected === "search-kubernetes-manifest-ticket" && (
+          <KubernetesManifestTicketSearch />
         )}
       </main>
     </div>
