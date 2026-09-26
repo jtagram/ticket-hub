@@ -1,6 +1,7 @@
 export type NavItemId =
   | "request-database-management"
-  | "view-database-management-tickets";
+  | "view-database-management-tickets"
+  | "search-database-management-ticket";
 
 export interface NavItem {
   id: NavItemId;
@@ -16,5 +17,9 @@ export const NAV_ITEMS: NavItem[] = [
   {
     id: "view-database-management-tickets",
     label: "Ver ticket de gestión de base de datos",
+  },
+  {
+    id: "search-database-management-ticket",
+    label: "Buscar ticket de gestión de base de datos",
   },
 ];

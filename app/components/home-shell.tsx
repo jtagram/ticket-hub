@@ -4,6 +4,7 @@ import { useState } from "react";
 import { NAV_ITEMS, type NavItemId } from "@/app/lib/nav-items";
 import { DatabaseManagementTicketForm } from "@/app/components/database-management-ticket-form";
 import { DatabaseManagementTicketList } from "@/app/components/database-management-ticket-list";
+import { DatabaseManagementTicketSearch } from "@/app/components/database-management-ticket-search";
 
 interface HomeShellProps {
   informerEmail: string;
@@ -43,6 +44,9 @@ export function HomeShell({ informerEmail }: HomeShellProps) {
         )}
         {selected === "view-database-management-tickets" && (
           <DatabaseManagementTicketList />
+        )}
+        {selected === "search-database-management-ticket" && (
+          <DatabaseManagementTicketSearch />
         )}
       </main>
     </div>
