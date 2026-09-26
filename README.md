@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ticket-hub
 
-## Getting Started
+## Variables de entorno
 
-First, run the development server:
+La app requiere las siguientes variables de entorno para funcionar
+(validadas con `requireEnv` en tiempo de ejecución; si falta alguna, la ruta
+que la necesita falla al arrancar):
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- `IAM_API_URL`
+- `TICKET_HUB_APPLICATION_NAME`
+- `TICKET_HUB_API_URL`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Cómo obtener cada una
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### `IAM_API_URL`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+URL desde la que este frontend puede alcanzar a `iam-api` (Service dentro
+del cluster, o su URL pública si corre fuera). Se usa para el login.
 
-## Learn More
+### `TICKET_HUB_APPLICATION_NAME`
 
-To learn more about Next.js, take a look at the following resources:
+Debe ser exactamente el mismo valor configurado como
+`TICKET_HUB_APPLICATION_NAME` en `ticket-hub-api`. Se usa al hacer login
+para pedir un token emitido para la aplicación "ticket-hub".
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### `TICKET_HUB_API_URL`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+URL desde la que este frontend puede alcanzar a `ticket-hub-api` (Service
+dentro del cluster, o su URL pública si corre fuera).
