@@ -8,6 +8,9 @@ import { DatabaseManagementTicketSearch } from "@/app/components/database-manage
 import { DatabaseProvisioningTicketForm } from "@/app/components/database-provisioning-ticket-form";
 import { DatabaseProvisioningTicketList } from "@/app/components/database-provisioning-ticket-list";
 import { DatabaseProvisioningTicketSearch } from "@/app/components/database-provisioning-ticket-search";
+import { ServerManagementTicketForm } from "@/app/components/server-management-ticket-form";
+import { ServerManagementTicketList } from "@/app/components/server-management-ticket-list";
+import { ServerManagementTicketSearch } from "@/app/components/server-management-ticket-search";
 
 interface HomeShellProps {
   informerEmail: string;
@@ -59,6 +62,15 @@ export function HomeShell({ informerEmail }: HomeShellProps) {
         )}
         {selected === "search-database-provisioning-ticket" && (
           <DatabaseProvisioningTicketSearch />
+        )}
+        {selected === "request-server-management" && (
+          <ServerManagementTicketForm informerEmail={informerEmail} />
+        )}
+        {selected === "view-server-management-tickets" && (
+          <ServerManagementTicketList />
+        )}
+        {selected === "search-server-management-ticket" && (
+          <ServerManagementTicketSearch />
         )}
       </main>
     </div>
