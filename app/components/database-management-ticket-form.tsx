@@ -2,9 +2,9 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import {
-  DATABASE_TICKET_DEPARTMENT,
-  DATABASE_TICKET_NAMESPACE,
-} from "@/app/lib/database-ticket-constants";
+  DATABASE_MANAGEMENT_TICKET_DEPARTMENT,
+  DATABASE_MANAGEMENT_TICKET_NAMESPACE,
+} from "@/app/lib/database-management-ticket-constants";
 
 interface ValueListItem {
   value: string;
@@ -17,11 +17,13 @@ interface ErrorResponse {
   message?: string;
 }
 
-interface DatabaseTicketFormProps {
+interface DatabaseManagementTicketFormProps {
   informerEmail: string;
 }
 
-export function DatabaseTicketForm({ informerEmail }: DatabaseTicketFormProps) {
+export function DatabaseManagementTicketForm({
+  informerEmail,
+}: DatabaseManagementTicketFormProps) {
   const [assignees, setAssignees] = useState<ValueListItem[] | null>(null);
   const [assigneesError, setAssigneesError] = useState<string | null>(null);
   const [assignee, setAssignee] = useState("");
@@ -91,7 +93,7 @@ export function DatabaseTicketForm({ informerEmail }: DatabaseTicketFormProps) {
     async function loadDeployments() {
       try {
         const response = await fetch(
-          `/api/value-lists/database-deployments?namespace=${DATABASE_TICKET_NAMESPACE}`,
+          `/api/value-lists/database-deployments?namespace=${DATABASE_MANAGEMENT_TICKET_NAMESPACE}`,
         );
         const data = (await response
           .json()
@@ -139,7 +141,7 @@ export function DatabaseTicketForm({ informerEmail }: DatabaseTicketFormProps) {
 
       try {
         const response = await fetch(
-          `/api/value-lists/database-names?namespace=${DATABASE_TICKET_NAMESPACE}&deployment=${dbDeployment}`,
+          `/api/value-lists/database-names?namespace=${DATABASE_MANAGEMENT_TICKET_NAMESPACE}&deployment=${dbDeployment}`,
         );
         const data = (await response
           .json()
@@ -180,7 +182,7 @@ export function DatabaseTicketForm({ informerEmail }: DatabaseTicketFormProps) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/tickets/database", {
+      const response = await fetch("/api/tickets/database/management", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -288,7 +290,7 @@ export function DatabaseTicketForm({ informerEmail }: DatabaseTicketFormProps) {
             type="text"
             disabled
             readOnly
-            value={DATABASE_TICKET_DEPARTMENT}
+            value={DATABASE_MANAGEMENT_TICKET_DEPARTMENT}
             className={disabledInputClassName}
           />
         </div>
@@ -332,7 +334,7 @@ export function DatabaseTicketForm({ informerEmail }: DatabaseTicketFormProps) {
             type="text"
             disabled
             readOnly
-            value={DATABASE_TICKET_NAMESPACE}
+            value={DATABASE_MANAGEMENT_TICKET_NAMESPACE}
             className={disabledInputClassName}
           />
         </div>
