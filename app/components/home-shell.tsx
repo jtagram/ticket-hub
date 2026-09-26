@@ -5,6 +5,9 @@ import { NAV_ITEMS, type NavItemId } from "@/app/lib/nav-items";
 import { DatabaseManagementTicketForm } from "@/app/components/database-management-ticket-form";
 import { DatabaseManagementTicketList } from "@/app/components/database-management-ticket-list";
 import { DatabaseManagementTicketSearch } from "@/app/components/database-management-ticket-search";
+import { DatabaseProvisioningTicketForm } from "@/app/components/database-provisioning-ticket-form";
+import { DatabaseProvisioningTicketList } from "@/app/components/database-provisioning-ticket-list";
+import { DatabaseProvisioningTicketSearch } from "@/app/components/database-provisioning-ticket-search";
 
 interface HomeShellProps {
   informerEmail: string;
@@ -47,6 +50,15 @@ export function HomeShell({ informerEmail }: HomeShellProps) {
         )}
         {selected === "search-database-management-ticket" && (
           <DatabaseManagementTicketSearch />
+        )}
+        {selected === "request-database-provisioning" && (
+          <DatabaseProvisioningTicketForm informerEmail={informerEmail} />
+        )}
+        {selected === "view-database-provisioning-tickets" && (
+          <DatabaseProvisioningTicketList />
+        )}
+        {selected === "search-database-provisioning-ticket" && (
+          <DatabaseProvisioningTicketSearch />
         )}
       </main>
     </div>
