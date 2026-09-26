@@ -10,7 +10,10 @@ export type NavItemId =
   | "search-server-management-ticket"
   | "request-kubernetes-manifest"
   | "view-kubernetes-manifest-tickets"
-  | "search-kubernetes-manifest-ticket";
+  | "search-kubernetes-manifest-ticket"
+  | "request-kubectl-command"
+  | "view-kubectl-command-tickets"
+  | "search-kubectl-command-ticket";
 
 export interface NavItem {
   id: NavItemId;
@@ -66,5 +69,17 @@ export const NAV_ITEMS: NavItem[] = [
   {
     id: "search-kubernetes-manifest-ticket",
     label: "Buscar ticket de gestión de manifiestos de Kubernetes",
+  },
+  {
+    id: "request-kubectl-command",
+    label: "Solicitar ejecución de comando kubectl",
+  },
+  {
+    id: "view-kubectl-command-tickets",
+    label: "Ver tickets de ejecución de comando kubectl",
+  },
+  {
+    id: "search-kubectl-command-ticket",
+    label: "Buscar ticket de ejecución de comando kubectl",
   },
 ];

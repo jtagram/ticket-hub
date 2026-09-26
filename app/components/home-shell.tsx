@@ -14,6 +14,9 @@ import { ServerManagementTicketSearch } from "@/app/components/server-management
 import { KubernetesManifestTicketForm } from "@/app/components/kubernetes-manifest-ticket-form";
 import { KubernetesManifestTicketList } from "@/app/components/kubernetes-manifest-ticket-list";
 import { KubernetesManifestTicketSearch } from "@/app/components/kubernetes-manifest-ticket-search";
+import { KubectlCommandTicketForm } from "@/app/components/kubectl-command-ticket-form";
+import { KubectlCommandTicketList } from "@/app/components/kubectl-command-ticket-list";
+import { KubectlCommandTicketSearch } from "@/app/components/kubectl-command-ticket-search";
 
 interface HomeShellProps {
   informerEmail: string;
@@ -83,6 +86,15 @@ export function HomeShell({ informerEmail }: HomeShellProps) {
         )}
         {selected === "search-kubernetes-manifest-ticket" && (
           <KubernetesManifestTicketSearch />
+        )}
+        {selected === "request-kubectl-command" && (
+          <KubectlCommandTicketForm informerEmail={informerEmail} />
+        )}
+        {selected === "view-kubectl-command-tickets" && (
+          <KubectlCommandTicketList />
+        )}
+        {selected === "search-kubectl-command-ticket" && (
+          <KubectlCommandTicketSearch />
         )}
       </main>
     </div>
