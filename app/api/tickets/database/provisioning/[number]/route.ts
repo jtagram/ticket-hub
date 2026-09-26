@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/app/lib/auth-cookie";
+import { requireEnv } from "@/app/lib/require-env";
 
-const TICKET_HUB_API_URL =
-  process.env.TICKET_HUB_API_URL ?? "http://localhost:3000";
+const TICKET_HUB_API_URL = requireEnv(
+  "TICKET_HUB_API_URL",
+  process.env.TICKET_HUB_API_URL,
+);
 
 interface TicketHubApiErrorBody {
   message?: string | string[];

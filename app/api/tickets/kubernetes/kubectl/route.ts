@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/app/lib/auth-cookie";
 import { decodeJwtPayload } from "@/app/lib/decode-jwt";
+import { requireEnv } from "@/app/lib/require-env";
 import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from "@/app/lib/kubectl-command-ticket-constants";
 
-const TICKET_HUB_API_URL =
-  process.env.TICKET_HUB_API_URL ?? "http://localhost:3000";
+const TICKET_HUB_API_URL = requireEnv(
+  "TICKET_HUB_API_URL",
+  process.env.TICKET_HUB_API_URL,
+);
 
 interface InternalUserJwtPayload {
   email?: string;
