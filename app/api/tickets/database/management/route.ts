@@ -95,3 +95,32 @@ export async function POST(request: Request) {
 
   return NextResponse.json(data, { status: ticketHubResponse.status });
 }
+
+export async function GET() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+
+  if (!token) {
+    return NextResponse.json({ message: "No autenticado." }, { status: 401 });
+  }
+
+  const ticketHubResponse = await fetch(
+    `${TICKET_HUB_API_URL}/tickets/database/management`,
+  );
+
+  const data = await ticketHubResponse.json();
+
+  if (!ticketHubResponse.ok) {
+    return NextResponse.json(
+      {
+        message: extractErrorMessage(
+          data as TicketHubApiErrorBody,
+          "No se pudieron obtener los tickets.",
+        ),
+      },
+      { status: ticketHubResponse.status },
+    );
+  }
+
+  return NextResponse.json(data, { status: ticketHubResponse.status });
+}
