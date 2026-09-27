@@ -3,12 +3,6 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/app/lib/auth-cookie";
 import { requireEnv } from "@/app/lib/require-env";
 
-const IAM_API_URL = requireEnv("IAM_API_URL", process.env.IAM_API_URL);
-const TICKET_HUB_APPLICATION_NAME = requireEnv(
-  "TICKET_HUB_APPLICATION_NAME",
-  process.env.TICKET_HUB_APPLICATION_NAME,
-);
-
 interface LoginRequestBody {
   email?: string;
   password?: string;
@@ -30,6 +24,11 @@ function extractErrorMessage(body: IamErrorBody, fallback: string): string {
 }
 
 export async function POST(request: Request) {
+  const IAM_API_URL = requireEnv("IAM_API_URL", process.env.IAM_API_URL);
+  const TICKET_HUB_APPLICATION_NAME = requireEnv(
+    "TICKET_HUB_APPLICATION_NAME",
+    process.env.TICKET_HUB_APPLICATION_NAME,
+  );
   let body: LoginRequestBody;
   try {
     body = (await request.json()) as LoginRequestBody;

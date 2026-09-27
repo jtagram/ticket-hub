@@ -5,11 +5,6 @@ import { decodeJwtPayload } from "@/app/lib/decode-jwt";
 import { requireEnv } from "@/app/lib/require-env";
 import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from "@/app/lib/kubectl-command-ticket-constants";
 
-const TICKET_HUB_API_URL = requireEnv(
-  "TICKET_HUB_API_URL",
-  process.env.TICKET_HUB_API_URL,
-);
-
 interface InternalUserJwtPayload {
   email?: string;
 }
@@ -36,6 +31,10 @@ function extractErrorMessage(
 }
 
 export async function POST(request: Request) {
+  const TICKET_HUB_API_URL = requireEnv(
+    "TICKET_HUB_API_URL",
+    process.env.TICKET_HUB_API_URL,
+  );
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
@@ -95,6 +94,10 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
+  const TICKET_HUB_API_URL = requireEnv(
+    "TICKET_HUB_API_URL",
+    process.env.TICKET_HUB_API_URL,
+  );
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
