@@ -2,21 +2,21 @@
 
 import { useState } from "react";
 import { NAV_ITEMS, type NavItemId } from "@/app/lib/nav-items";
-import { DatabaseManagementTicketForm } from "@/app/components/database-management-ticket-form";
-import { DatabaseManagementTicketList } from "@/app/components/database-management-ticket-list";
-import { DatabaseManagementTicketSearch } from "@/app/components/database-management-ticket-search";
-import { DatabaseProvisioningTicketForm } from "@/app/components/database-provisioning-ticket-form";
-import { DatabaseProvisioningTicketList } from "@/app/components/database-provisioning-ticket-list";
-import { DatabaseProvisioningTicketSearch } from "@/app/components/database-provisioning-ticket-search";
-import { ServerManagementTicketForm } from "@/app/components/server-management-ticket-form";
-import { ServerManagementTicketList } from "@/app/components/server-management-ticket-list";
-import { ServerManagementTicketSearch } from "@/app/components/server-management-ticket-search";
-import { KubernetesManifestTicketForm } from "@/app/components/kubernetes-manifest-ticket-form";
-import { KubernetesManifestTicketList } from "@/app/components/kubernetes-manifest-ticket-list";
-import { KubernetesManifestTicketSearch } from "@/app/components/kubernetes-manifest-ticket-search";
-import { KubectlCommandTicketForm } from "@/app/components/kubectl-command-ticket-form";
-import { KubectlCommandTicketList } from "@/app/components/kubectl-command-ticket-list";
-import { KubectlCommandTicketSearch } from "@/app/components/kubectl-command-ticket-search";
+import { DatabaseManagementTicketForm } from "@/app/features/database-management-ticket/database-management-ticket-form";
+import { DatabaseManagementTicketList } from "@/app/features/database-management-ticket/database-management-ticket-list";
+import { DatabaseManagementTicketSearch } from "@/app/features/database-management-ticket/database-management-ticket-search";
+import { DatabaseProvisioningTicketForm } from "@/app/features/database-provisioning-ticket/database-provisioning-ticket-form";
+import { DatabaseProvisioningTicketList } from "@/app/features/database-provisioning-ticket/database-provisioning-ticket-list";
+import { DatabaseProvisioningTicketSearch } from "@/app/features/database-provisioning-ticket/database-provisioning-ticket-search";
+import { ServerManagementTicketForm } from "@/app/features/server-management-ticket/server-management-ticket-form";
+import { ServerManagementTicketList } from "@/app/features/server-management-ticket/server-management-ticket-list";
+import { ServerManagementTicketSearch } from "@/app/features/server-management-ticket/server-management-ticket-search";
+import { KubernetesManifestTicketForm } from "@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket-form";
+import { KubernetesManifestTicketList } from "@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket-list";
+import { KubernetesManifestTicketSearch } from "@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket-search";
+import { KubectlCommandTicketForm } from "@/app/features/kubectl-command-ticket/kubectl-command-ticket-form";
+import { KubectlCommandTicketList } from "@/app/features/kubectl-command-ticket/kubectl-command-ticket-list";
+import { KubectlCommandTicketSearch } from "@/app/features/kubectl-command-ticket/kubectl-command-ticket-search";
 
 interface HomeShellProps {
   informerEmail: string;
