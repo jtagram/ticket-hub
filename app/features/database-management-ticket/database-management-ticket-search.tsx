@@ -1,28 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-
-interface DatabaseManagementTicket {
-  id: number;
-  number: number;
-  informer: string;
-  assignee: string;
-  department: string;
-  subject: string;
-  status: "OPEN" | "APPROVED" | "REJECTED";
-  description: string;
-  response: string;
-  dbNamespace: string;
-  dbDeployment: string;
-  dbName: string;
-  sqlCode: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ErrorResponse {
-  message?: string;
-}
+import {
+  getDatabaseManagementTicket,
+  updateDatabaseManagementTicket,
+} from "@/app/features/database-management-ticket/database-management-ticket.service";
+import type { DatabaseManagementTicket } from "@/app/features/database-management-ticket/database-management-ticket.dto";
 
 const STATUS_LABELS: Record<DatabaseManagementTicket["status"], string> = {
   OPEN: "Abierto",
@@ -58,29 +41,13 @@ export function DatabaseManagementTicketSearch() {
     setError(null);
     setIsUpdating(true);
     try {
-      const response = await fetch(
-        `/api/tickets/database/management/${ticket.number}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action }),
-        },
+      const updated = await updateDatabaseManagementTicket(
+        ticket.number,
+        action,
       );
-      const data = (await response
-        .json()
-        .catch(() => null)) as DatabaseManagementTicket | ErrorResponse | null;
-
-      if (!response.ok) {
-        setError(
-          (data as ErrorResponse | null)?.message ??
-            "No se pudo actualizar el ticket.",
-        );
-        return;
-      }
-
-      setTicket(data as DatabaseManagementTicket);
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      setTicket(updated);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsUpdating(false);
     }
@@ -94,26 +61,10 @@ export function DatabaseManagementTicketSearch() {
     setHasSearched(true);
 
     try {
-      const response = await fetch(
-        `/api/tickets/database/management/${ticketNumber}`,
-      );
-      const data = (await response
-        .json()
-        .catch(() => null)) as DatabaseManagementTicket | ErrorResponse | null;
-
-      if (!response.ok) {
-        setError(
-          response.status === 404
-            ? "No se encontró ningún ticket con ese número."
-            : (data as ErrorResponse | null)?.message ??
-                "No se pudo obtener el ticket.",
-        );
-        return;
-      }
-
-      setTicket(data as DatabaseManagementTicket);
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      const found = await getDatabaseManagementTicket(ticketNumber);
+      setTicket(found);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsSearching(false);
     }

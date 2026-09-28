@@ -4,17 +4,17 @@ import { useEffect, useState, type FormEvent } from "react";
 import {
   DATABASE_MANAGEMENT_TICKET_DEPARTMENT,
   DATABASE_MANAGEMENT_TICKET_NAMESPACE,
-} from "@/app/lib/database-management-ticket-constants";
+} from "@/app/features/database-management-ticket/database-management-ticket-constants";
+import {
+  createDatabaseManagementTicket,
+  getAssignees,
+  getDbNames,
+  getDeployments,
+} from "@/app/features/database-management-ticket/database-management-ticket.service";
 
 interface ValueListItem {
   value: string;
   label: string;
-}
-
-type ValueListResponse = ValueListItem[];
-
-interface ErrorResponse {
-  message?: string;
 }
 
 interface DatabaseManagementTicketFormProps {
@@ -50,81 +50,40 @@ export function DatabaseManagementTicketForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     async function loadAssignees() {
       try {
-        const response = await fetch("/api/value-lists/assignees");
-        const data = (await response
-          .json()
-          .catch(() => null)) as ValueListResponse | ErrorResponse | null;
-
-        if (cancelled) return;
-
-        if (!response.ok) {
-          setAssigneesError(
-            (data as ErrorResponse | null)?.message ??
-              "No se pudieron obtener los responsables.",
-          );
-          return;
-        }
-
-        const loaded = (data as ValueListResponse) ?? [];
+        const loaded = await getAssignees(controller.signal);
         setAssignees(loaded);
-        if (loaded.length > 0) {
-          setAssignee(loaded[0].value);
-        }
-      } catch {
-        if (!cancelled) {
-          setAssigneesError("No se pudo conectar con el servidor.");
-        }
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setAssigneesError((err as Error).message);
       }
     }
 
     loadAssignees();
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     async function loadDeployments() {
       try {
-        const response = await fetch(
-          `/api/value-lists/database-deployments?namespace=${DATABASE_MANAGEMENT_TICKET_NAMESPACE}`,
+        const loaded = await getDeployments(
+          DATABASE_MANAGEMENT_TICKET_NAMESPACE,
+          controller.signal,
         );
-        const data = (await response
-          .json()
-          .catch(() => null)) as ValueListResponse | ErrorResponse | null;
-
-        if (cancelled) return;
-
-        if (!response.ok) {
-          setDeploymentsError(
-            (data as ErrorResponse | null)?.message ??
-              "No se pudieron obtener los deployments.",
-          );
-          return;
-        }
-
-        const loaded = (data as ValueListResponse) ?? [];
         setDeployments(loaded);
-        if (loaded.length > 0) {
-          setDbDeployment(loaded[0].value);
-        }
-      } catch {
-        if (!cancelled) {
-          setDeploymentsError("No se pudo conectar con el servidor.");
-        }
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setDeploymentsError((err as Error).message);
       }
     }
 
     loadDeployments();
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
@@ -132,7 +91,7 @@ export function DatabaseManagementTicketForm({
       return;
     }
 
-    let cancelled = false;
+    const controller = new AbortController();
 
     async function loadDbNames() {
       setDbNames(null);
@@ -140,39 +99,20 @@ export function DatabaseManagementTicketForm({
       setDbNamesError(null);
 
       try {
-        const response = await fetch(
-          `/api/value-lists/database-names?namespace=${DATABASE_MANAGEMENT_TICKET_NAMESPACE}&deployment=${dbDeployment}`,
+        const loaded = await getDbNames(
+          DATABASE_MANAGEMENT_TICKET_NAMESPACE,
+          dbDeployment,
+          controller.signal,
         );
-        const data = (await response
-          .json()
-          .catch(() => null)) as ValueListResponse | ErrorResponse | null;
-
-        if (cancelled) return;
-
-        if (!response.ok) {
-          setDbNamesError(
-            (data as ErrorResponse | null)?.message ??
-              "No se pudieron obtener las bases de datos.",
-          );
-          return;
-        }
-
-        const loaded = (data as ValueListResponse) ?? [];
         setDbNames(loaded);
-        if (loaded.length > 0) {
-          setDbName(loaded[0].value);
-        }
-      } catch {
-        if (!cancelled) {
-          setDbNamesError("No se pudo conectar con el servidor.");
-        }
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setDbNamesError((err as Error).message);
       }
     }
 
     loadDbNames();
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, [dbDeployment]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -182,34 +122,21 @@ export function DatabaseManagementTicketForm({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/tickets/database/management", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          assignee,
-          subject,
-          description,
-          dbDeployment,
-          dbName,
-          sqlCode,
-        }),
+      await createDatabaseManagementTicket({
+        assignee,
+        subject,
+        description,
+        dbDeployment,
+        dbName,
+        sqlCode,
       });
-
-      const data = (await response
-        .json()
-        .catch(() => null)) as ErrorResponse | null;
-
-      if (!response.ok) {
-        setError(data?.message ?? "No se pudo crear el ticket.");
-        return;
-      }
 
       setSuccess("Ticket creado correctamente.");
       setSubject("");
       setDescription("");
       setSqlCode("");
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsSubmitting(false);
     }
@@ -230,17 +157,8 @@ export function DatabaseManagementTicketForm({
 
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="informer" className={labelClassName}>
-            Informante
-          </label>
-          <input
-            id="informer"
-            type="text"
-            disabled
-            readOnly
-            value={informerEmail}
-            className={disabledInputClassName}
-          />
+          <span className={labelClassName}>Informante</span>
+          <p className={disabledInputClassName}>{informerEmail}</p>
         </div>
 
         <div className="mb-4">
@@ -272,6 +190,9 @@ export function DatabaseManagementTicketForm({
               onChange={(event) => setAssignee(event.target.value)}
               className={inputClassName}
             >
+              <option value="" disabled>
+                Seleccionar
+              </option>
               {assignees.map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
@@ -369,6 +290,9 @@ export function DatabaseManagementTicketForm({
               onChange={(event) => setDbDeployment(event.target.value)}
               className={inputClassName}
             >
+              <option value="" disabled>
+                Seleccionar
+              </option>
               {deployments.map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
@@ -406,6 +330,9 @@ export function DatabaseManagementTicketForm({
               onChange={(event) => setDbName(event.target.value)}
               className={inputClassName}
             >
+              <option value="" disabled>
+                Seleccionar
+              </option>
               {dbNames.map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
