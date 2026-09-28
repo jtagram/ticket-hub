@@ -31,7 +31,7 @@ export async function GET(request: Request) {
 
   if (!response.ok) {
     return NextResponse.json(
-      { message: "No se pudieron obtener los deployments." },
+      { message: data?.message ?? "No se pudieron obtener los deployments." },
       { status: response.status },
     );
   }

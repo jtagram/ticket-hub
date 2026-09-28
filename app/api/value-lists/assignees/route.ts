@@ -23,7 +23,7 @@ export async function GET() {
 
   if (!response.ok) {
     return NextResponse.json(
-      { message: "No se pudieron obtener los responsables." },
+      { message: data?.message ?? "No se pudieron obtener los responsables." },
       { status: response.status },
     );
   }

@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
   if (!response.ok) {
     return NextResponse.json(
-      { message: "No se pudieron obtener las bases de datos." },
+      { message: data?.message ?? "No se pudieron obtener las bases de datos." },
       { status: response.status },
     );
   }
