@@ -1,0 +1,58 @@
+export interface ValueListItem {
+  value: string;
+  label: string;
+}
+
+export type ValueListResponse = ValueListItem[];
+
+export interface ErrorResponse {
+  message?: string;
+}
+
+export interface FetchValueListResult {
+  ok: boolean;
+  data: ValueListResponse | ErrorResponse | null;
+}
+
+export interface CreateServerManagementTicketPayload {
+  assignee: string;
+  subject: string;
+  description: string;
+  codeAnsible: string;
+}
+
+export interface PostResult {
+  ok: boolean;
+  data: ErrorResponse | null;
+}
+
+export interface ServerManagementTicket {
+  id: number;
+  number: number;
+  informer: string;
+  assignee: string;
+  department: string;
+  subject: string;
+  status: "OPEN" | "APPROVED" | "REJECTED";
+  description: string;
+  codeAnsible: string;
+  response: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FetchTicketsResult {
+  ok: boolean;
+  data: ServerManagementTicket[] | ErrorResponse | null;
+}
+
+export interface FetchTicketResult {
+  ok: boolean;
+  status: number;
+  data: ServerManagementTicket | ErrorResponse | null;
+}
+
+export interface UpdateTicketResult {
+  ok: boolean;
+  data: ServerManagementTicket | ErrorResponse | null;
+}

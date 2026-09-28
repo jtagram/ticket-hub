@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/app/lib/auth-cookie";
 import { decodeJwtPayload } from "@/app/lib/decode-jwt";
 import { requireEnv } from "@/app/lib/require-env";
-import { SERVER_MANAGEMENT_TICKET_DEPARTMENT } from "@/app/lib/server-management-ticket-constants";
+import { SERVER_MANAGEMENT_TICKET_DEPARTMENT } from "@/app/features/server-management-ticket/server-management-ticket-constants";
 
 interface InternalUserJwtPayload {
   email?: string;
