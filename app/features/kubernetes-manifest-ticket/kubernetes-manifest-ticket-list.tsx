@@ -1,18 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-interface KubernetesManifestTicket {
-  id: number;
-  number: number;
-  informer: string;
-  subject: string;
-  createdAt: string;
-}
-
-interface ErrorResponse {
-  message?: string;
-}
+import { getKubernetesManifestTickets } from "@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket.service";
+import type { KubernetesManifestTicket } from "@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket.dto";
 
 function formatDate(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("es-AR");
@@ -25,40 +15,20 @@ export function KubernetesManifestTicketList() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     async function loadTickets() {
       try {
-        const response = await fetch("/api/tickets/kubernetes/manifest");
-        const data = (await response
-          .json()
-          .catch(() => null)) as
-          | KubernetesManifestTicket[]
-          | ErrorResponse
-          | null;
-
-        if (cancelled) return;
-
-        if (!response.ok) {
-          setError(
-            (data as ErrorResponse | null)?.message ??
-              "No se pudieron obtener los tickets.",
-          );
-          return;
-        }
-
-        setTickets((data as KubernetesManifestTicket[]) ?? []);
-      } catch {
-        if (!cancelled) {
-          setError("No se pudo conectar con el servidor.");
-        }
+        const loaded = await getKubernetesManifestTickets(controller.signal);
+        setTickets(loaded);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setError((err as Error).message);
       }
     }
 
     loadTickets();
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, []);
 
   return (

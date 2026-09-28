@@ -6,7 +6,7 @@ import { requireEnv } from "@/app/lib/require-env";
 import {
   KUBERNETES_MANIFEST_TICKET_DEPARTMENT,
   KUBERNETES_MANIFEST_TICKET_NAMESPACE,
-} from "@/app/lib/kubernetes-manifest-ticket-constants";
+} from "@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket-constants";
 
 interface InternalUserJwtPayload {
   email?: string;

@@ -1,27 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-
-interface KubernetesManifestTicket {
-  id: number;
-  number: number;
-  informer: string;
-  assignee: string;
-  department: string;
-  subject: string;
-  status: "OPEN" | "APPROVED" | "REJECTED";
-  description: string;
-  namespace: string;
-  action: "apply" | "create" | "delete";
-  codeYaml: string;
-  response: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ErrorResponse {
-  message?: string;
-}
+import {
+  getKubernetesManifestTicket,
+  updateKubernetesManifestTicket,
+} from "@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket.service";
+import type { KubernetesManifestTicket } from "@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket.dto";
 
 const STATUS_LABELS: Record<KubernetesManifestTicket["status"], string> = {
   OPEN: "Abierto",
@@ -57,29 +41,13 @@ export function KubernetesManifestTicketSearch() {
     setError(null);
     setIsUpdating(true);
     try {
-      const response = await fetch(
-        `/api/tickets/kubernetes/manifest/${ticket.number}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: decision }),
-        },
+      const updated = await updateKubernetesManifestTicket(
+        ticket.number,
+        decision,
       );
-      const data = (await response
-        .json()
-        .catch(() => null)) as KubernetesManifestTicket | ErrorResponse | null;
-
-      if (!response.ok) {
-        setError(
-          (data as ErrorResponse | null)?.message ??
-            "No se pudo actualizar el ticket.",
-        );
-        return;
-      }
-
-      setTicket(data as KubernetesManifestTicket);
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      setTicket(updated);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsUpdating(false);
     }
@@ -93,26 +61,10 @@ export function KubernetesManifestTicketSearch() {
     setHasSearched(true);
 
     try {
-      const response = await fetch(
-        `/api/tickets/kubernetes/manifest/${ticketNumber}`,
-      );
-      const data = (await response
-        .json()
-        .catch(() => null)) as KubernetesManifestTicket | ErrorResponse | null;
-
-      if (!response.ok) {
-        setError(
-          response.status === 404
-            ? "No se encontró ningún ticket con ese número."
-            : (data as ErrorResponse | null)?.message ??
-                "No se pudo obtener el ticket.",
-        );
-        return;
-      }
-
-      setTicket(data as KubernetesManifestTicket);
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      const found = await getKubernetesManifestTicket(ticketNumber);
+      setTicket(found);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsSearching(false);
     }
