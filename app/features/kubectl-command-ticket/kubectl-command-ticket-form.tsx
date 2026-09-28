@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Alert, Button, Form } from "react-bootstrap";
 import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from "@/app/features/kubectl-command-ticket/kubectl-command-ticket-constants";
 import {
   createKubectlCommandTicket,
@@ -12,6 +14,13 @@ interface ValueListItem {
   label: string;
 }
 
+interface KubectlCommandTicketFormValues {
+  assignee: string;
+  subject: string;
+  description: string;
+  kubectlCommand: string;
+}
+
 interface KubectlCommandTicketFormProps {
   informerEmail: string;
 }
@@ -21,15 +30,24 @@ export function KubectlCommandTicketForm({
 }: KubectlCommandTicketFormProps) {
   const [assignees, setAssignees] = useState<ValueListItem[] | null>(null);
   const [assigneesError, setAssigneesError] = useState<string | null>(null);
-  const [assignee, setAssignee] = useState("");
-
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [kubectlCommand, setKubectlCommand] = useState("");
-
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    resetField,
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<KubectlCommandTicketFormValues>({
+    mode: "onChange",
+    defaultValues: {
+      assignee: "",
+      subject: "",
+      description: "",
+      kubectlCommand: "",
+    },
+  });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -48,187 +66,117 @@ export function KubectlCommandTicketForm({
     return () => controller.abort();
   }, []);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
+  const onSubmit = handleSubmit(async (data) => {
+    clearErrors("root");
     setSuccess(null);
-    setIsSubmitting(true);
 
     try {
-      await createKubectlCommandTicket({
-        assignee,
-        subject,
-        description,
-        kubectlCommand,
-      });
+      await createKubectlCommandTicket(data);
 
       setSuccess("Ticket creado correctamente.");
-      setSubject("");
-      setDescription("");
-      setKubectlCommand("");
+      resetField("subject");
+      resetField("description");
+      resetField("kubectlCommand");
     } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setIsSubmitting(false);
+      setError("root", { message: (err as Error).message });
     }
-  }
-
-  const inputClassName =
-    "w-full rounded border border-black/[.15] bg-white px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-black/20 dark:border-white/[.2] dark:bg-black dark:text-zinc-50";
-  const disabledInputClassName =
-    "w-full rounded border border-black/[.15] bg-zinc-100 px-3 py-2 text-black disabled:opacity-100 dark:border-white/[.2] dark:bg-zinc-900 dark:text-zinc-50";
-  const labelClassName =
-    "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
-  const hintClassName = "mt-1 text-xs text-zinc-500 dark:text-zinc-400";
+  });
 
   return (
-    <div className="max-w-lg">
-      <h2 className="mb-6 text-xl font-semibold text-black dark:text-zinc-50">
-        Solicitar ejecución de comando kubectl
-      </h2>
+    <div style={{ maxWidth: 520 }}>
+      <h2 className="h4 mb-4">Solicitar ejecución de comando kubectl</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="informer" className={labelClassName}>
-            Informante
-          </label>
-          <input
-            id="informer"
-            type="text"
-            disabled
-            readOnly
-            value={informerEmail}
-            className={disabledInputClassName}
-          />
-        </div>
+      <Form onSubmit={onSubmit}>
+        <Form.Group className="mb-3" controlId="informer">
+          <Form.Label>Informante</Form.Label>
+          <Form.Control plaintext readOnly value={informerEmail} />
+        </Form.Group>
 
-        <div className="mb-4">
-          <label htmlFor="assignee" className={labelClassName}>
-            Responsable
-          </label>
-
+        <Form.Group className="mb-3" controlId="assignee">
+          <Form.Label>Responsable</Form.Label>
+          <Form.Select {...register("assignee", { required: true })}>
+            <option value="" disabled>
+              Seleccionar
+            </option>
+            {assignees?.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </Form.Select>
           {assigneesError && (
-            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+            <Alert variant="danger" className="mt-2">
               {assigneesError}
-            </p>
+            </Alert>
           )}
           {!assigneesError && assignees === null && (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Cargando…
-            </p>
+            <Form.Text className="text-muted">Cargando…</Form.Text>
           )}
-          {!assigneesError && assignees !== null && assignees.length === 0 && (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              No hay usuarios con permisos ADMIN o APPROVER en ticket-hub
-              todavía.
-            </p>
-          )}
-          {!assigneesError && assignees !== null && assignees.length > 0 && (
-            <select
-              id="assignee"
-              required
-              value={assignee}
-              onChange={(event) => setAssignee(event.target.value)}
-              className={inputClassName}
-            >
-              <option value="" disabled>
-                Seleccionar
-              </option>
-              {assignees.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+        </Form.Group>
 
-        <div className="mb-4">
-          <label htmlFor="department" className={labelClassName}>
-            Departamento
-          </label>
-          <input
-            id="department"
-            type="text"
-            disabled
+        <Form.Group className="mb-3" controlId="department">
+          <Form.Label>Departamento</Form.Label>
+          <Form.Control
+            plaintext
             readOnly
             value={KUBECTL_COMMAND_TICKET_DEPARTMENT}
-            className={disabledInputClassName}
           />
-        </div>
+        </Form.Group>
 
-        <div className="mb-4">
-          <label htmlFor="subject" className={labelClassName}>
-            Asunto
-          </label>
-          <input
-            id="subject"
-            type="text"
-            required
-            maxLength={500}
-            value={subject}
-            onChange={(event) => setSubject(event.target.value)}
-            className={inputClassName}
+        <Form.Group className="mb-3" controlId="subject">
+          <Form.Label>Asunto</Form.Label>
+          <Form.Control
+            {...register("subject", {
+              required: "El asunto es obligatorio.",
+              maxLength: { value: 500, message: "Máximo 500 caracteres." },
+            })}
           />
-        </div>
+          {errors.subject && (
+            <Form.Text className="text-danger">
+              {errors.subject.message}
+            </Form.Text>
+          )}
+        </Form.Group>
 
-        <div className="mb-4">
-          <label htmlFor="description" className={labelClassName}>
-            Descripción
-          </label>
-          <textarea
-            id="description"
-            required
-            maxLength={500}
+        <Form.Group className="mb-3" controlId="description">
+          <Form.Label>Descripción</Form.Label>
+          <Form.Control
+            as="textarea"
             rows={3}
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            className={inputClassName}
+            {...register("description", {
+              required: "La descripción es obligatoria.",
+              maxLength: { value: 500, message: "Máximo 500 caracteres." },
+            })}
           />
-        </div>
+          {errors.description && (
+            <Form.Text className="text-danger">
+              {errors.description.message}
+            </Form.Text>
+          )}
+        </Form.Group>
 
-        <div className="mb-6">
-          <label htmlFor="kubectlCommand" className={labelClassName}>
-            Comando kubectl
-          </label>
-          <textarea
-            id="kubectlCommand"
-            required
+        <Form.Group className="mb-4" controlId="kubectlCommand">
+          <Form.Label>Comando kubectl</Form.Label>
+          <Form.Control
+            as="textarea"
             rows={3}
+            className="font-monospace"
             placeholder="get pods -n default"
-            value={kubectlCommand}
-            onChange={(event) => setKubectlCommand(event.target.value)}
-            className={`${inputClassName} font-mono text-sm`}
+            {...register("kubectlCommand", { required: true })}
           />
-          <p className={hintClassName}>
+          <Form.Text className="text-muted">
             No incluyas el prefijo &quot;kubectl&quot; — se agrega
             automáticamente al ejecutar.
-          </p>
-        </div>
+          </Form.Text>
+        </Form.Group>
 
-        {error && (
-          <p className="mb-4 text-sm text-red-600 dark:text-red-400" role="alert">
-            {error}
-          </p>
-        )}
+        {errors.root && <Alert variant="danger">{errors.root.message}</Alert>}
+        {success && <Alert variant="success">{success}</Alert>}
 
-        {success && (
-          <p
-            className="mb-4 text-sm text-green-600 dark:text-green-400"
-            role="status"
-          >
-            {success}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={isSubmitting || !assignee}
-          className="rounded-full bg-foreground px-5 py-2.5 text-background transition-colors hover:bg-[#383838] disabled:opacity-60 dark:hover:bg-[#ccc]"
-        >
+        <Button type="submit" variant="dark" disabled={isSubmitting || !isValid}>
           {isSubmitting ? "Enviando…" : "Solicitar"}
-        </button>
-      </form>
+        </Button>
+      </Form>
     </div>
   );
 }
