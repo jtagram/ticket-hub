@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ListGroup } from "react-bootstrap";
 import { getServerManagementTickets } from "@/app/features/server-management-ticket/server-management-ticket.service";
 import type { ServerManagementTicket } from "@/app/features/server-management-ticket/server-management-ticket.dto";
 
@@ -54,32 +55,23 @@ export function ServerManagementTicketList() {
       )}
 
       {!error && tickets !== null && tickets.length > 0 && (
-        <ul className="flex flex-col gap-3">
+        <ListGroup>
           {tickets.map((ticket) => (
-            <li
-              key={ticket.id}
-              className="rounded border border-black/[.08] p-4 dark:border-white/[.145]"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-black dark:text-zinc-50">
-                  Ticket #{ticket.number}
-                </span>
-                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            <ListGroup.Item key={ticket.id}>
+              <div className="d-flex align-items-center justify-content-between">
+                <span className="fw-medium">Ticket #{ticket.number}</span>
+                <span className="text-muted small">
                   {formatDate(ticket.createdAt)}
                 </span>
               </div>
-              <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
-                {ticket.subject}
-              </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <div className="small mt-1">{ticket.subject}</div>
+              <div className="text-muted small mt-1">
                 Informante: {ticket.informer}
-              </p>
-              <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
-                ID: {ticket.id}
-              </p>
-            </li>
+              </div>
+              <div className="text-muted small mt-1">ID: {ticket.id}</div>
+            </ListGroup.Item>
           ))}
-        </ul>
+        </ListGroup>
       )}
     </div>
   );
