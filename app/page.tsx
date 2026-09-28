@@ -16,7 +16,7 @@ export default async function HomePage() {
     : null;
 
   return (
-    <div className="flex min-h-screen flex-1 flex-col">
+    <div className="d-flex flex-column vh-100">
       <Header />
       <HomeShell informerEmail={payload?.email ?? ""} />
     </div>

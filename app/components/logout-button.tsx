@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "react-bootstrap";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -18,13 +19,13 @@ export function LogoutButton() {
   }
 
   return (
-    <button
+    <Button
       type="button"
+      variant="outline-secondary"
       onClick={handleLogout}
       disabled={isLoggingOut}
-      className="rounded-full border border-black/[.08] px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-black/[.04] disabled:opacity-60 dark:border-white/[.145] dark:text-zinc-50 dark:hover:bg-white/[.08]"
     >
       Cerrar sesión
-    </button>
+    </Button>
   );
 }

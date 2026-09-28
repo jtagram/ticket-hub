@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { Alert, Button, Card, Form } from "react-bootstrap";
 
 interface LoginErrorResponse {
   message?: string;
@@ -44,70 +45,56 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 px-4 dark:bg-black">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm rounded-lg border border-black/[.08] bg-white p-8 shadow-sm dark:border-white/[.145] dark:bg-zinc-950"
-      >
-        <h1 className="mb-6 text-2xl font-semibold text-black dark:text-zinc-50">
-          Iniciar sesión
-        </h1>
+    <div
+      className="d-flex flex-grow-1 align-items-center justify-content-center bg-light px-3"
+      style={{ minHeight: "100vh" }}
+    >
+      <Card style={{ width: "100%", maxWidth: 380 }} className="shadow-sm">
+        <Card.Body className="p-4">
+          <Card.Title as="h1" className="h4 mb-4">
+            Iniciar sesión
+          </Card.Title>
 
-        <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Correo electrónico
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded border border-black/[.15] bg-white px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-black/20 dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
-          />
-        </div>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="email">
+              <Form.Label>Correo electrónico</Form.Label>
+              <Form.Control
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </Form.Group>
 
-        <div className="mb-6">
-          <label
-            htmlFor="password"
-            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            Contraseña
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded border border-black/[.15] bg-white px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-black/20 dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
-          />
-        </div>
+            <Form.Group className="mb-4" controlId="password">
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </Form.Group>
 
-        {error && (
-          <p
-            className="mb-4 text-sm text-red-600 dark:text-red-400"
-            role="alert"
-          >
-            {error}
-          </p>
-        )}
+            {error && (
+              <Alert variant="danger" role="alert">
+                {error}
+              </Alert>
+            )}
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full rounded-full bg-foreground px-5 py-2.5 text-background transition-colors hover:bg-[#383838] disabled:opacity-60 dark:hover:bg-[#ccc]"
-        >
-          {isSubmitting ? "Ingresando…" : "Ingresar"}
-        </button>
-      </form>
+            <Button
+              type="submit"
+              variant="dark"
+              disabled={isSubmitting}
+              className="w-100"
+            >
+              {isSubmitting ? "Ingresando…" : "Ingresar"}
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
     </div>
   );
 }
