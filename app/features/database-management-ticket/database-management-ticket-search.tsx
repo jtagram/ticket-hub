@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Alert, Badge, Button, Card, Col, Form, Row } from "react-bootstrap";
 import {
   getDatabaseManagementTicket,
   updateDatabaseManagementTicket,
@@ -70,179 +71,130 @@ export function DatabaseManagementTicketSearch() {
     }
   }
 
-  const inputClassName =
-    "w-full rounded border border-black/[.15] bg-white px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-black/20 dark:border-white/[.2] dark:bg-black dark:text-zinc-50";
-  const labelClassName =
-    "mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300";
-
   return (
-    <div className="w-full">
-      <h2 className="mb-6 text-xl font-semibold text-black dark:text-zinc-50">
-        Buscar ticket de gestión de base de datos
-      </h2>
+    <div className="w-100">
+      <h2 className="h4 mb-4">Buscar ticket de gestión de base de datos</h2>
 
-      <form onSubmit={handleSubmit} className="mb-8 flex max-w-sm items-end gap-3">
-        <div className="flex-1">
-          <label htmlFor="ticketNumber" className={labelClassName}>
-            Número de ticket
-          </label>
-          <input
-            id="ticketNumber"
+      <Form
+        onSubmit={handleSubmit}
+        className="d-flex align-items-end gap-3 mb-4"
+        style={{ maxWidth: 380 }}
+      >
+        <Form.Group className="flex-grow-1" controlId="ticketNumber">
+          <Form.Label>Número de ticket</Form.Label>
+          <Form.Control
             type="number"
             min={1}
             required
             value={ticketNumber}
             onChange={(event) => setTicketNumber(event.target.value)}
-            className={inputClassName}
           />
-        </div>
-        <button
-          type="submit"
-          disabled={isSearching}
-          className="rounded-full bg-foreground px-5 py-2.5 text-background transition-colors hover:bg-[#383838] disabled:opacity-60 dark:hover:bg-[#ccc]"
-        >
+        </Form.Group>
+        <Button type="submit" variant="dark" disabled={isSearching}>
           {isSearching ? "Buscando…" : "Buscar"}
-        </button>
-      </form>
+        </Button>
+      </Form>
 
-      {error && (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <Alert variant="danger">{error}</Alert>}
 
       {!error && hasSearched && !isSearching && ticket && (
-        <div className="w-full rounded border border-black/[.08] p-6 dark:border-white/[.145]">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-black dark:text-zinc-50">
-              Ticket #{ticket.number}
-            </h3>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full bg-black/[.05] px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-white/[.08] dark:text-zinc-300">
-                {STATUS_LABELS[ticket.status]}
-              </span>
-              {ticket.status === "OPEN" && (
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleDecision("approve")}
-                    disabled={isUpdating}
-                    className="rounded-full bg-foreground px-4 py-2 text-sm text-background transition-colors hover:bg-[#383838] disabled:opacity-60 dark:hover:bg-[#ccc]"
-                  >
-                    {isUpdating ? "Procesando…" : "Aprobar"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDecision("reject")}
-                    disabled={isUpdating}
-                    className="rounded-full border border-red-600 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-600 hover:text-white disabled:opacity-60 dark:border-red-400 dark:text-red-400"
-                  >
-                    {isUpdating ? "Procesando…" : "Rechazar"}
-                  </button>
-                </div>
-              )}
+        <Card>
+          <Card.Body>
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <Card.Title as="h3" className="h5 mb-0">
+                Ticket #{ticket.number}
+              </Card.Title>
+              <div className="d-flex align-items-center gap-3">
+                <Badge bg="secondary">{STATUS_LABELS[ticket.status]}</Badge>
+                {ticket.status === "OPEN" && (
+                  <div className="d-flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="dark"
+                      onClick={() => handleDecision("approve")}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? "Procesando…" : "Aprobar"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleDecision("reject")}
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? "Procesando…" : "Rechazar"}
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          <dl className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">ID</dt>
-              <dd className="text-black dark:text-zinc-50">{ticket.id}</dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">Informante</dt>
-              <dd className="text-black dark:text-zinc-50">
-                {ticket.informer}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">Responsable</dt>
-              <dd className="text-black dark:text-zinc-50">
-                {ticket.assignee}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">
-                Departamento
-              </dt>
-              <dd className="text-black dark:text-zinc-50">
-                {ticket.department}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">Namespace</dt>
-              <dd className="text-black dark:text-zinc-50">
-                {ticket.dbNamespace}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">Deployment</dt>
-              <dd className="text-black dark:text-zinc-50">
-                {ticket.dbDeployment}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">
-                Base de datos
-              </dt>
-              <dd className="text-black dark:text-zinc-50">
-                {ticket.dbName}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">
-                Fecha de creación
-              </dt>
-              <dd className="text-black dark:text-zinc-50">
-                {formatDate(ticket.createdAt)}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500 dark:text-zinc-400">
-                Última actualización
-              </dt>
-              <dd className="text-black dark:text-zinc-50">
-                {formatDate(ticket.updatedAt)}
-              </dd>
-            </div>
-          </dl>
+            <Row className="gy-3 small">
+              <Col xs={6}>
+                <div className="text-muted">ID</div>
+                <div>{ticket.id}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="text-muted">Informante</div>
+                <div>{ticket.informer}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="text-muted">Responsable</div>
+                <div>{ticket.assignee}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="text-muted">Departamento</div>
+                <div>{ticket.department}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="text-muted">Namespace</div>
+                <div>{ticket.dbNamespace}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="text-muted">Deployment</div>
+                <div>{ticket.dbDeployment}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="text-muted">Base de datos</div>
+                <div>{ticket.dbName}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="text-muted">Fecha de creación</div>
+                <div>{formatDate(ticket.createdAt)}</div>
+              </Col>
+              <Col xs={6}>
+                <div className="text-muted">Última actualización</div>
+                <div>{formatDate(ticket.updatedAt)}</div>
+              </Col>
+            </Row>
 
-          <div className="mt-4">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Asunto
-            </p>
-            <p className="text-sm text-black dark:text-zinc-50">
-              {ticket.subject}
-            </p>
-          </div>
+            <div className="mt-4">
+              <div className="text-muted small">Asunto</div>
+              <div className="small">{ticket.subject}</div>
+            </div>
 
-          <div className="mt-4">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Descripción
-            </p>
-            <p className="whitespace-pre-wrap text-sm text-black dark:text-zinc-50">
-              {ticket.description}
-            </p>
-          </div>
+            <div className="mt-3">
+              <div className="text-muted small">Descripción</div>
+              <div className="small" style={{ whiteSpace: "pre-wrap" }}>
+                {ticket.description}
+              </div>
+            </div>
 
-          <div className="mt-4">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              SQL a ejecutar
-            </p>
-            <pre className="mt-1 overflow-x-auto rounded bg-zinc-100 p-3 font-mono text-xs text-black dark:bg-zinc-900 dark:text-zinc-50">
-              {ticket.sqlCode}
-            </pre>
-          </div>
+            <div className="mt-3">
+              <div className="text-muted small">SQL a ejecutar</div>
+              <pre className="mt-1 bg-light p-3 rounded small">
+                {ticket.sqlCode}
+              </pre>
+            </div>
 
-          <div className="mt-4">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Respuesta de ejecución
-            </p>
-            <pre className="mt-1 overflow-x-auto rounded bg-zinc-100 p-3 font-mono text-xs text-black dark:bg-zinc-900 dark:text-zinc-50">
-              {formatResponse(ticket.response)}
-            </pre>
-          </div>
-        </div>
+            <div className="mt-3">
+              <div className="text-muted small">Respuesta de ejecución</div>
+              <pre className="mt-1 bg-light p-3 rounded small">
+                {formatResponse(ticket.response)}
+              </pre>
+            </div>
+          </Card.Body>
+        </Card>
       )}
     </div>
   );
