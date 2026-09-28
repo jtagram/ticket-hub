@@ -184,7 +184,10 @@ export function DatabaseProvisioningTicketSearch() {
 
             <div className="mt-3">
               <div className="text-muted small">Respuesta de ejecución</div>
-              <pre className="mt-1 bg-light p-3 rounded small">
+              <pre
+                className="mt-1 bg-light p-3 rounded small"
+                style={{ overflowX: "auto" }}
+              >
                 {formatResponse(ticket.response)}
               </pre>
             </div>

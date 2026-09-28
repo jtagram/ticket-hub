@@ -32,17 +32,20 @@ export function HomeShell({ informerEmail }: HomeShellProps) {
         variant="pills"
         activeKey={selected}
         onSelect={(key) => key && setSelected(key as NavItemId)}
-        className="flex-column flex-nowrap border-end bg-light p-3"
+        className="flex-column flex-nowrap flex-shrink-0 border-end bg-light p-3"
         style={{ width: 260, overflowY: "auto" }}
       >
         {NAV_ITEMS.map((item) => (
-          <Nav.Item key={item.id} className="mb-1">
+          <Nav.Item key={item.id} className="mb-1 text-nowrap">
             <Nav.Link eventKey={item.id}>{item.label}</Nav.Link>
           </Nav.Item>
         ))}
       </Nav>
 
-      <main className="flex-grow-1 overflow-auto p-4">
+      <main
+        className="flex-grow-1 overflow-auto p-4"
+        style={{ minWidth: 0 }}
+      >
         {selected === "request-database-management" && (
           <DatabaseManagementTicketForm informerEmail={informerEmail} />
         )}
