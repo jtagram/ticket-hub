@@ -48,6 +48,40 @@ export function ServerManagementTicketSearch() {
   const [error, setError] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  async function handleDecision(action: "approve" | "reject") {
+    if (!ticket) return;
+    setError(null);
+    setIsUpdating(true);
+    try {
+      const response = await fetch(
+        `/api/tickets/server/management/${ticket.number}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action }),
+        },
+      );
+      const data = (await response
+        .json()
+        .catch(() => null)) as ServerManagementTicket | ErrorResponse | null;
+
+      if (!response.ok) {
+        setError(
+          (data as ErrorResponse | null)?.message ??
+            "No se pudo actualizar el ticket.",
+        );
+        return;
+      }
+
+      setTicket(data as ServerManagementTicket);
+    } catch {
+      setError("No se pudo conectar con el servidor.");
+    } finally {
+      setIsUpdating(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -129,9 +163,31 @@ export function ServerManagementTicketSearch() {
             <h3 className="text-lg font-semibold text-black dark:text-zinc-50">
               Ticket #{ticket.number}
             </h3>
-            <span className="rounded-full bg-black/[.05] px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-white/[.08] dark:text-zinc-300">
-              {STATUS_LABELS[ticket.status]}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-black/[.05] px-3 py-1 text-xs font-medium text-zinc-700 dark:bg-white/[.08] dark:text-zinc-300">
+                {STATUS_LABELS[ticket.status]}
+              </span>
+              {ticket.status === "OPEN" && (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDecision("approve")}
+                    disabled={isUpdating}
+                    className="rounded-full bg-foreground px-4 py-2 text-sm text-background transition-colors hover:bg-[#383838] disabled:opacity-60 dark:hover:bg-[#ccc]"
+                  >
+                    {isUpdating ? "Procesando…" : "Aprobar"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDecision("reject")}
+                    disabled={isUpdating}
+                    className="rounded-full border border-red-600 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-600 hover:text-white disabled:opacity-60 dark:border-red-400 dark:text-red-400"
+                  >
+                    {isUpdating ? "Procesando…" : "Rechazar"}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <dl className="grid grid-cols-2 gap-4 text-sm">
