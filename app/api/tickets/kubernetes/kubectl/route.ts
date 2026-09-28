@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/app/lib/auth-cookie";
 import { decodeJwtPayload } from "@/app/lib/decode-jwt";
 import { requireEnv } from "@/app/lib/require-env";
-import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from "@/app/lib/kubectl-command-ticket-constants";
+import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from "@/app/features/kubectl-command-ticket/kubectl-command-ticket-constants";
 
 interface InternalUserJwtPayload {
   email?: string;

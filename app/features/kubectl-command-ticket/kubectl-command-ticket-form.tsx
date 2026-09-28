@@ -1,17 +1,15 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from "@/app/lib/kubectl-command-ticket-constants";
+import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from "@/app/features/kubectl-command-ticket/kubectl-command-ticket-constants";
+import {
+  createKubectlCommandTicket,
+  getAssignees,
+} from "@/app/features/kubectl-command-ticket/kubectl-command-ticket.service";
 
 interface ValueListItem {
   value: string;
   label: string;
-}
-
-type ValueListResponse = ValueListItem[];
-
-interface ErrorResponse {
-  message?: string;
 }
 
 interface KubectlCommandTicketFormProps {
@@ -34,41 +32,20 @@ export function KubectlCommandTicketForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     async function loadAssignees() {
       try {
-        const response = await fetch("/api/value-lists/assignees");
-        const data = (await response
-          .json()
-          .catch(() => null)) as ValueListResponse | ErrorResponse | null;
-
-        if (cancelled) return;
-
-        if (!response.ok) {
-          setAssigneesError(
-            (data as ErrorResponse | null)?.message ??
-              "No se pudieron obtener los responsables.",
-          );
-          return;
-        }
-
-        const loaded = (data as ValueListResponse) ?? [];
+        const loaded = await getAssignees(controller.signal);
         setAssignees(loaded);
-        if (loaded.length > 0) {
-          setAssignee(loaded[0].value);
-        }
-      } catch {
-        if (!cancelled) {
-          setAssigneesError("No se pudo conectar con el servidor.");
-        }
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        setAssigneesError((err as Error).message);
       }
     }
 
     loadAssignees();
-    return () => {
-      cancelled = true;
-    };
+    return () => controller.abort();
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -78,32 +55,19 @@ export function KubectlCommandTicketForm({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/tickets/kubernetes/kubectl", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          assignee,
-          subject,
-          description,
-          kubectlCommand,
-        }),
+      await createKubectlCommandTicket({
+        assignee,
+        subject,
+        description,
+        kubectlCommand,
       });
-
-      const data = (await response
-        .json()
-        .catch(() => null)) as ErrorResponse | null;
-
-      if (!response.ok) {
-        setError(data?.message ?? "No se pudo crear el ticket.");
-        return;
-      }
 
       setSuccess("Ticket creado correctamente.");
       setSubject("");
       setDescription("");
       setKubectlCommand("");
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsSubmitting(false);
     }
@@ -167,6 +131,9 @@ export function KubectlCommandTicketForm({
               onChange={(event) => setAssignee(event.target.value)}
               className={inputClassName}
             >
+              <option value="" disabled>
+                Seleccionar
+              </option>
               {assignees.map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}

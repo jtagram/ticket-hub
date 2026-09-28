@@ -1,25 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-
-interface KubectlCommandTicket {
-  id: number;
-  number: number;
-  informer: string;
-  assignee: string;
-  department: string;
-  subject: string;
-  status: "OPEN" | "APPROVED" | "REJECTED";
-  description: string;
-  kubectlCommand: string;
-  response: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ErrorResponse {
-  message?: string;
-}
+import {
+  getKubectlCommandTicket,
+  updateKubectlCommandTicket,
+} from "@/app/features/kubectl-command-ticket/kubectl-command-ticket.service";
+import type { KubectlCommandTicket } from "@/app/features/kubectl-command-ticket/kubectl-command-ticket.dto";
 
 const STATUS_LABELS: Record<KubectlCommandTicket["status"], string> = {
   OPEN: "Abierto",
@@ -55,29 +41,10 @@ export function KubectlCommandTicketSearch() {
     setError(null);
     setIsUpdating(true);
     try {
-      const response = await fetch(
-        `/api/tickets/kubernetes/kubectl/${ticket.number}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action }),
-        },
-      );
-      const data = (await response
-        .json()
-        .catch(() => null)) as KubectlCommandTicket | ErrorResponse | null;
-
-      if (!response.ok) {
-        setError(
-          (data as ErrorResponse | null)?.message ??
-            "No se pudo actualizar el ticket.",
-        );
-        return;
-      }
-
-      setTicket(data as KubectlCommandTicket);
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      const updated = await updateKubectlCommandTicket(ticket.number, action);
+      setTicket(updated);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsUpdating(false);
     }
@@ -91,26 +58,10 @@ export function KubectlCommandTicketSearch() {
     setHasSearched(true);
 
     try {
-      const response = await fetch(
-        `/api/tickets/kubernetes/kubectl/${ticketNumber}`,
-      );
-      const data = (await response
-        .json()
-        .catch(() => null)) as KubectlCommandTicket | ErrorResponse | null;
-
-      if (!response.ok) {
-        setError(
-          response.status === 404
-            ? "No se encontró ningún ticket con ese número."
-            : (data as ErrorResponse | null)?.message ??
-                "No se pudo obtener el ticket.",
-        );
-        return;
-      }
-
-      setTicket(data as KubectlCommandTicket);
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      const found = await getKubectlCommandTicket(ticketNumber);
+      setTicket(found);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsSearching(false);
     }
