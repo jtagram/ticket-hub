@@ -1,27 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-
-interface DatabaseProvisioningTicket {
-  id: number;
-  number: number;
-  informer: string;
-  assignee: string;
-  department: string;
-  subject: string;
-  status: "OPEN" | "APPROVED" | "REJECTED";
-  description: string;
-  response: string;
-  dbNamespace: string;
-  dbDeployment: string;
-  newDbName: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ErrorResponse {
-  message?: string;
-}
+import {
+  getDatabaseProvisioningTicket,
+  updateDatabaseProvisioningTicket,
+} from "@/app/features/database-provisioning-ticket/database-provisioning-ticket.service";
+import type { DatabaseProvisioningTicket } from "@/app/features/database-provisioning-ticket/database-provisioning-ticket.dto";
 
 const STATUS_LABELS: Record<DatabaseProvisioningTicket["status"], string> = {
   OPEN: "Abierto",
@@ -59,32 +43,13 @@ export function DatabaseProvisioningTicketSearch() {
     setError(null);
     setIsUpdating(true);
     try {
-      const response = await fetch(
-        `/api/tickets/database/provisioning/${ticket.number}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action }),
-        },
+      const updated = await updateDatabaseProvisioningTicket(
+        ticket.number,
+        action,
       );
-      const data = (await response
-        .json()
-        .catch(() => null)) as
-        | DatabaseProvisioningTicket
-        | ErrorResponse
-        | null;
-
-      if (!response.ok) {
-        setError(
-          (data as ErrorResponse | null)?.message ??
-            "No se pudo actualizar el ticket.",
-        );
-        return;
-      }
-
-      setTicket(data as DatabaseProvisioningTicket);
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      setTicket(updated);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsUpdating(false);
     }
@@ -98,29 +63,10 @@ export function DatabaseProvisioningTicketSearch() {
     setHasSearched(true);
 
     try {
-      const response = await fetch(
-        `/api/tickets/database/provisioning/${ticketNumber}`,
-      );
-      const data = (await response
-        .json()
-        .catch(() => null)) as
-        | DatabaseProvisioningTicket
-        | ErrorResponse
-        | null;
-
-      if (!response.ok) {
-        setError(
-          response.status === 404
-            ? "No se encontró ningún ticket con ese número."
-            : (data as ErrorResponse | null)?.message ??
-                "No se pudo obtener el ticket.",
-        );
-        return;
-      }
-
-      setTicket(data as DatabaseProvisioningTicket);
-    } catch {
-      setError("No se pudo conectar con el servidor.");
+      const found = await getDatabaseProvisioningTicket(ticketNumber);
+      setTicket(found);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsSearching(false);
     }

@@ -6,7 +6,7 @@ import { requireEnv } from "@/app/lib/require-env";
 import {
   DATABASE_PROVISIONING_TICKET_DEPARTMENT,
   DATABASE_PROVISIONING_TICKET_NAMESPACE,
-} from "@/app/lib/database-provisioning-ticket-constants";
+} from "@/app/features/database-provisioning-ticket/database-provisioning-ticket-constants";
 
 interface InternalUserJwtPayload {
   email?: string;
