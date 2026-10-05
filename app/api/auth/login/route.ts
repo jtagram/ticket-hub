@@ -29,6 +29,10 @@ export async function POST(request: Request) {
     "TICKET_HUB_APPLICATION_NAME",
     process.env.TICKET_HUB_APPLICATION_NAME,
   );
+  const TICKET_HUB_TARGET_APPLICATION_NAME = requireEnv(
+    "TICKET_HUB_TARGET_APPLICATION_NAME",
+    process.env.TICKET_HUB_TARGET_APPLICATION_NAME,
+  );
   let body: LoginRequestBody;
   try {
     body = (await request.json()) as LoginRequestBody;
@@ -52,6 +56,7 @@ export async function POST(request: Request) {
     headers: {
       "Content-Type": "application/json",
       "x-application-name": TICKET_HUB_APPLICATION_NAME,
+      "x-target-application": TICKET_HUB_TARGET_APPLICATION_NAME,
     },
     body: JSON.stringify({ email, password }),
   });
