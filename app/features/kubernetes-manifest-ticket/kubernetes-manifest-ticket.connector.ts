@@ -63,7 +63,7 @@ export async function fetchKubernetesManifestTicket(
   signal?: AbortSignal,
 ): Promise<FetchTicketResult> {
   const response = await fetch(
-    `/api/tickets/kubernetes/manifest/${ticketNumber}`,
+    `/api/tickets/kubernetes/manifest/${encodeURIComponent(ticketNumber)}`,
     { signal },
   );
   const data = (await response.json().catch(() => null)) as

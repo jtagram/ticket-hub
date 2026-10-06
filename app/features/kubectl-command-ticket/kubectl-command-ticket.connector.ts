@@ -63,7 +63,7 @@ export async function fetchKubectlCommandTicket(
   signal?: AbortSignal,
 ): Promise<FetchTicketResult> {
   const response = await fetch(
-    `/api/tickets/kubernetes/kubectl/${ticketNumber}`,
+    `/api/tickets/kubernetes/kubectl/${encodeURIComponent(ticketNumber)}`,
     { signal },
   );
   const data = (await response.json().catch(() => null)) as

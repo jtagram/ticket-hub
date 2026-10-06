@@ -63,7 +63,7 @@ export async function fetchServerManagementTicket(
   signal?: AbortSignal,
 ): Promise<FetchTicketResult> {
   const response = await fetch(
-    `/api/tickets/server/management/${ticketNumber}`,
+    `/api/tickets/server/management/${encodeURIComponent(ticketNumber)}`,
     { signal },
   );
   const data = (await response.json().catch(() => null)) as

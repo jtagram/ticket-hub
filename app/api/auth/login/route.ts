@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { AUTH_COOKIE_NAME } from "@/app/lib/auth-cookie";
 import { requireEnv } from "@/app/lib/require-env";
+import {
+  extractErrorMessage,
+  readBackendBody,
+  UNREADABLE_BACKEND_BODY_STATUS,
+  type BackendErrorBody,
+} from "@/app/lib/backend-proxy";
 
 interface LoginRequestBody {
   email?: string;
@@ -10,17 +16,6 @@ interface LoginRequestBody {
 
 interface IamLoginSuccess {
   access_token: string;
-}
-
-interface IamErrorBody {
-  message?: string | string[];
-}
-
-function extractErrorMessage(body: IamErrorBody, fallback: string): string {
-  if (Array.isArray(body.message)) {
-    return body.message.join(", ");
-  }
-  return body.message ?? fallback;
 }
 
 export async function POST(request: Request) {
@@ -61,12 +56,21 @@ export async function POST(request: Request) {
     body: JSON.stringify({ email, password }),
   });
 
-  const data = (await iamResponse.json()) as IamLoginSuccess & IamErrorBody;
+  const data = await readBackendBody<
+    Partial<IamLoginSuccess> & BackendErrorBody
+  >(iamResponse);
 
   if (!iamResponse.ok) {
     return NextResponse.json(
       { message: extractErrorMessage(data, "No se pudo iniciar sesión.") },
       { status: iamResponse.status },
+    );
+  }
+
+  if (!data?.access_token) {
+    return NextResponse.json(
+      { message: "No se pudo iniciar sesión." },
+      { status: UNREADABLE_BACKEND_BODY_STATUS },
     );
   }
 

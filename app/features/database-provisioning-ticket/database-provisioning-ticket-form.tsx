@@ -224,11 +224,20 @@ export function DatabaseProvisioningTicketForm({
           <Form.Control
             className="font-monospace"
             {...register("newDbName", {
-              required: true,
-              maxLength: 63,
-              pattern: /^[a-z_][a-z0-9_]*$/,
+              required: "El nombre de la base de datos es obligatorio.",
+              maxLength: { value: 63, message: "Máximo 63 caracteres." },
+              pattern: {
+                value: /^[a-z_][a-z0-9_]*$/,
+                message:
+                  "Solo minúsculas, números y guion bajo (_), y no puede empezar con un número.",
+              },
             })}
           />
+          {errors.newDbName && (
+            <Form.Text className="text-danger">
+              {errors.newDbName.message}
+            </Form.Text>
+          )}
         </Form.Group>
 
         {errors.root && <Alert variant="danger">{errors.root.message}</Alert>}

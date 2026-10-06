@@ -12,6 +12,8 @@ export function LogoutButton() {
     setIsLoggingOut(true);
     try {
       await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // Network failure still leaves the session screen.
     } finally {
       router.push("/login");
       router.refresh();

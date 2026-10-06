@@ -33,7 +33,7 @@ export function fetchDeployments(
   signal?: AbortSignal,
 ): Promise<FetchValueListResult> {
   return fetchValueList(
-    `/api/value-lists/database-deployments?namespace=${namespace}`,
+    `/api/value-lists/database-deployments?${new URLSearchParams({ namespace })}`,
     signal,
   );
 }
@@ -44,7 +44,7 @@ export function fetchDbNames(
   signal?: AbortSignal,
 ): Promise<FetchValueListResult> {
   return fetchValueList(
-    `/api/value-lists/database-names?namespace=${namespace}&deployment=${deployment}`,
+    `/api/value-lists/database-names?${new URLSearchParams({ namespace, deployment })}`,
     signal,
   );
 }
@@ -84,7 +84,7 @@ export async function fetchDatabaseManagementTicket(
   signal?: AbortSignal,
 ): Promise<FetchTicketResult> {
   const response = await fetch(
-    `/api/tickets/database/management/${ticketNumber}`,
+    `/api/tickets/database/management/${encodeURIComponent(ticketNumber)}`,
     { signal },
   );
   const data = (await response.json().catch(() => null)) as

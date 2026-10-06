@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { AUTH_COOKIE_NAME } from "@/app/lib/auth-cookie";
 import { decodeJwtPayload } from "@/app/lib/decode-jwt";
 import { requireEnv } from "@/app/lib/require-env";
+import {
+  forwardBackendResponse,
+  getAuthToken,
+} from "@/app/lib/backend-proxy";
 import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from "@/app/features/kubectl-command-ticket/kubectl-command-ticket-constants";
 
 interface InternalUserJwtPayload {
@@ -16,30 +18,14 @@ interface CreateKubectlCommandTicketRequestBody {
   kubectlCommand?: string;
 }
 
-interface TicketHubApiErrorBody {
-  message?: string | string[];
-}
-
-function extractErrorMessage(
-  body: TicketHubApiErrorBody,
-  fallback: string,
-): string {
-  if (Array.isArray(body.message)) {
-    return body.message.join(", ");
-  }
-  return body.message ?? fallback;
-}
-
 export async function POST(request: Request) {
   const TICKET_HUB_API_URL = requireEnv(
     "TICKET_HUB_API_URL",
     process.env.TICKET_HUB_API_URL,
   );
-  const cookieStore = await cookies();
-  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "No autenticado." }, { status: 401 });
+  const { token, unauthorized } = await getAuthToken();
+  if (unauthorized) {
+    return unauthorized;
   }
 
   const payload = decodeJwtPayload<InternalUserJwtPayload>(token);
@@ -76,21 +62,7 @@ export async function POST(request: Request) {
     },
   );
 
-  const data = await ticketHubResponse.json();
-
-  if (!ticketHubResponse.ok) {
-    return NextResponse.json(
-      {
-        message: extractErrorMessage(
-          data as TicketHubApiErrorBody,
-          "No se pudo crear el ticket.",
-        ),
-      },
-      { status: ticketHubResponse.status },
-    );
-  }
-
-  return NextResponse.json(data, { status: ticketHubResponse.status });
+  return forwardBackendResponse(ticketHubResponse, "No se pudo crear el ticket.");
 }
 
 export async function GET() {
@@ -98,11 +70,9 @@ export async function GET() {
     "TICKET_HUB_API_URL",
     process.env.TICKET_HUB_API_URL,
   );
-  const cookieStore = await cookies();
-  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "No autenticado." }, { status: 401 });
+  const { token, unauthorized } = await getAuthToken();
+  if (unauthorized) {
+    return unauthorized;
   }
 
   const ticketHubResponse = await fetch(
@@ -110,19 +80,5 @@ export async function GET() {
     { headers: { Authorization: `Bearer ${token}` } },
   );
 
-  const data = await ticketHubResponse.json();
-
-  if (!ticketHubResponse.ok) {
-    return NextResponse.json(
-      {
-        message: extractErrorMessage(
-          data as TicketHubApiErrorBody,
-          "No se pudieron obtener los tickets.",
-        ),
-      },
-      { status: ticketHubResponse.status },
-    );
-  }
-
-  return NextResponse.json(data, { status: ticketHubResponse.status });
+  return forwardBackendResponse(ticketHubResponse, "No se pudieron obtener los tickets.");
 }

@@ -33,7 +33,7 @@ export function fetchDeployments(
   signal?: AbortSignal,
 ): Promise<FetchValueListResult> {
   return fetchValueList(
-    `/api/value-lists/database-deployments?namespace=${namespace}`,
+    `/api/value-lists/database-deployments?${new URLSearchParams({ namespace })}`,
     signal,
   );
 }
@@ -73,7 +73,7 @@ export async function fetchDatabaseProvisioningTicket(
   signal?: AbortSignal,
 ): Promise<FetchTicketResult> {
   const response = await fetch(
-    `/api/tickets/database/provisioning/${ticketNumber}`,
+    `/api/tickets/database/provisioning/${encodeURIComponent(ticketNumber)}`,
     { signal },
   );
   const data = (await response.json().catch(() => null)) as
