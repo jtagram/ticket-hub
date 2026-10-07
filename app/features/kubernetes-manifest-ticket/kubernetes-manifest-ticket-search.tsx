@@ -10,6 +10,7 @@ import type { KubernetesManifestTicket } from "@/app/features/kubernetes-manifes
 
 const STATUS_LABELS: Record<KubernetesManifestTicket["status"], string> = {
   OPEN: "Abierto",
+  IN_PROGRESS: "En progreso",
   APPROVED: "Aprobado",
   REJECTED: "Rechazado",
 };

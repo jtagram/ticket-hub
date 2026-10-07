@@ -10,6 +10,7 @@ import type { DatabaseProvisioningTicket } from "@/app/features/database-provisi
 
 const STATUS_LABELS: Record<DatabaseProvisioningTicket["status"], string> = {
   OPEN: "Abierto",
+  IN_PROGRESS: "En progreso",
   APPROVED: "Aprobado",
   REJECTED: "Rechazado",
 };

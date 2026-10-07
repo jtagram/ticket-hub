@@ -10,6 +10,7 @@ import type { ServerManagementTicket } from "@/app/features/server-management-ti
 
 const STATUS_LABELS: Record<ServerManagementTicket["status"], string> = {
   OPEN: "Abierto",
+  IN_PROGRESS: "En progreso",
   APPROVED: "Aprobado",
   REJECTED: "Rechazado",
 };

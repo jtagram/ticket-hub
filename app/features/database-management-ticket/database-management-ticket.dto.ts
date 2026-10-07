@@ -35,7 +35,7 @@ export interface DatabaseManagementTicket {
   assignee: string;
   department: string;
   subject: string;
-  status: "OPEN" | "APPROVED" | "REJECTED";
+  status: "OPEN" | "IN_PROGRESS" | "APPROVED" | "REJECTED";
   description: string;
   response: string;
   dbNamespace: string;

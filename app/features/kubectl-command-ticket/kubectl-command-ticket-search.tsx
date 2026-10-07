@@ -10,6 +10,7 @@ import type { KubectlCommandTicket } from "@/app/features/kubectl-command-ticket
 
 const STATUS_LABELS: Record<KubectlCommandTicket["status"], string> = {
   OPEN: "Abierto",
+  IN_PROGRESS: "En progreso",
   APPROVED: "Aprobado",
   REJECTED: "Rechazado",
 };

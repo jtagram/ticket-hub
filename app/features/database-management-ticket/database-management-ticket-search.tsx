@@ -10,6 +10,7 @@ import type { DatabaseManagementTicket } from "@/app/features/database-managemen
 
 const STATUS_LABELS: Record<DatabaseManagementTicket["status"], string> = {
   OPEN: "Abierto",
+  IN_PROGRESS: "En progreso",
   APPROVED: "Aprobado",
   REJECTED: "Rechazado",
 };

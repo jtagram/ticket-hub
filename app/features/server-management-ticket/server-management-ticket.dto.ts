@@ -33,7 +33,7 @@ export interface ServerManagementTicket {
   assignee: string;
   department: string;
   subject: string;
-  status: "OPEN" | "APPROVED" | "REJECTED";
+  status: "OPEN" | "IN_PROGRESS" | "APPROVED" | "REJECTED";
   description: string;
   codeAnsible: string;
   response: string;

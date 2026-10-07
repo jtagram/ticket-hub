@@ -128,6 +128,7 @@ describe("DatabaseProvisioningTicketSearch", () => {
 
   it.each([
     ["OPEN", "Abierto"],
+    ["IN_PROGRESS", "En progreso"],
     ["APPROVED", "Aprobado"],
     ["REJECTED", "Rechazado"],
   ] as const)("shows the %s status as %s", async (status, label) => {
@@ -139,7 +140,7 @@ describe("DatabaseProvisioningTicketSearch", () => {
     expect(await screen.findByText(label, { selector: ".badge" })).toBeInTheDocument();
   });
 
-  it.each(["APPROVED", "REJECTED"] as const)(
+  it.each(["IN_PROGRESS", "APPROVED", "REJECTED"] as const)(
     "does not offer decisions for a %s ticket",
     async (status) => {
       vi.mocked(getDatabaseProvisioningTicket).mockResolvedValue({ ...openTicket, status });

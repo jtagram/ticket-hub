@@ -126,6 +126,7 @@ describe("ServerManagementTicketSearch", () => {
 
   it.each([
     ["OPEN", "Abierto"],
+    ["IN_PROGRESS", "En progreso"],
     ["APPROVED", "Aprobado"],
     ["REJECTED", "Rechazado"],
   ] as const)("shows the %s status as %s", async (status, label) => {
@@ -137,7 +138,7 @@ describe("ServerManagementTicketSearch", () => {
     expect(await screen.findByText(label, { selector: ".badge" })).toBeInTheDocument();
   });
 
-  it.each(["APPROVED", "REJECTED"] as const)(
+  it.each(["IN_PROGRESS", "APPROVED", "REJECTED"] as const)(
     "does not offer decisions for a %s ticket",
     async (status) => {
       vi.mocked(getServerManagementTicket).mockResolvedValue({ ...openTicket, status });
