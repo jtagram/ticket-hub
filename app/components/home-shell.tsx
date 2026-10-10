@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Nav } from "react-bootstrap";
-import { NAV_ITEMS, type NavItemId } from "@/app/lib/nav-items";
+import { NAV_GROUPS, NAV_ITEMS, type NavItemId } from "@/app/lib/nav-items";
 import { DatabaseManagementTicketForm } from "@/app/features/database-management-ticket/database-management-ticket-form";
 import { DatabaseManagementTicketList } from "@/app/features/database-management-ticket/database-management-ticket-list";
 import { DatabaseManagementTicketSearch } from "@/app/features/database-management-ticket/database-management-ticket-search";
@@ -35,10 +35,17 @@ export function HomeShell({ informerEmail }: HomeShellProps) {
         className="flex-column flex-nowrap flex-shrink-0 border-end bg-light p-3"
         style={{ width: 260, overflowY: "auto" }}
       >
-        {NAV_ITEMS.map((item) => (
-          <Nav.Item key={item.id} className="mb-1">
-            <Nav.Link eventKey={item.id}>{item.label}</Nav.Link>
-          </Nav.Item>
+        {NAV_GROUPS.map((group) => (
+          <div key={group.title} className="mb-3">
+            <div className="text-uppercase small fw-bold text-muted px-2 mb-1">
+              {group.title}
+            </div>
+            {group.items.map((item) => (
+              <Nav.Item key={item.id} className="mb-1">
+                <Nav.Link eventKey={item.id}>{item.label}</Nav.Link>
+              </Nav.Item>
+            ))}
+          </div>
         ))}
       </Nav>
 

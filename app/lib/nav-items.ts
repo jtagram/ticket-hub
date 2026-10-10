@@ -20,8 +20,12 @@ export interface NavItem {
   label: string;
 }
 
-// Add future sidebar entries here; HomeShell renders whatever is listed.
-export const NAV_ITEMS: NavItem[] = [
+export interface NavGroup {
+  title: string;
+  items: NavItem[];
+}
+
+const DATABASE_ITEMS: NavItem[] = [
   {
     id: "request-database-management",
     label: "Solicitar gestión de base de datos",
@@ -46,6 +50,9 @@ export const NAV_ITEMS: NavItem[] = [
     id: "search-database-provisioning-ticket",
     label: "Buscar ticket de aprovisionamiento de base de datos",
   },
+];
+
+const SERVER_ITEMS: NavItem[] = [
   {
     id: "request-server-management",
     label: "Solicitar gestión de servidor",
@@ -58,6 +65,9 @@ export const NAV_ITEMS: NavItem[] = [
     id: "search-server-management-ticket",
     label: "Buscar ticket de gestión de servidor",
   },
+];
+
+const KUBERNETES_ITEMS: NavItem[] = [
   {
     id: "request-kubernetes-manifest",
     label: "Solicitar gestión de manifiestos de Kubernetes",
@@ -83,3 +93,12 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Buscar ticket de ejecución de comando kubectl",
   },
 ];
+
+// Add future sidebar entries to a group here; HomeShell renders whatever is listed.
+export const NAV_GROUPS: NavGroup[] = [
+  { title: "Base de datos", items: DATABASE_ITEMS },
+  { title: "Servidor", items: SERVER_ITEMS },
+  { title: "Kubernetes", items: KUBERNETES_ITEMS },
+];
+
+export const NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((group) => group.items);
