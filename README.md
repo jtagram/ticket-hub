@@ -21,7 +21,7 @@ del cluster, o su URL pública si corre fuera). Se usa para el login.
 ### `TICKET_HUB_APPLICATION_NAME`
 
 Nombre de esta aplicación (origen) tal como está registrada en `iam-api`:
-"ticket-hub". Se envía como `x-application-name` al hacer login.
+"ticket-hub". Se envía como `x-origin-application` al hacer login.
 
 ### `TICKET_HUB_TARGET_APPLICATION_NAME`
 

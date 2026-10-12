@@ -99,7 +99,7 @@ describe("POST /api/auth/login", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-application-name": "ticket-hub",
+          "x-origin-application": "ticket-hub",
           "x-target-application": "target-app",
         },
         body: JSON.stringify({ email: "a@b.com", password: "x" }),

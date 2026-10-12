@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-application-name": TICKET_HUB_APPLICATION_NAME,
+      "x-origin-application": TICKET_HUB_APPLICATION_NAME,
       "x-target-application": TICKET_HUB_TARGET_APPLICATION_NAME,
     },
     body: JSON.stringify({ email, password }),
