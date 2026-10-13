@@ -4,4 +4,4 @@
  * sends), so a direct API call can't spoof it either. */
 // Spelling mirrors the backend contract (ticket-hub-api `Role.KUBERNATES` /
 // `KUBERNATES_APPROVER`); do not "fix" it here without changing the backend.
-export const KUBECTL_COMMAND_TICKET_DEPARTMENT = "KUBERNATES";
+export const KUBECTL_COMMAND_TICKET_DEPARTMENT = 'KUBERNATES';

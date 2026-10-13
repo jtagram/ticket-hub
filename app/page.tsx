@@ -1,24 +1,23 @@
-import { cookies } from "next/headers";
-import { AUTH_COOKIE_NAME } from "@/app/lib/auth-cookie";
-import { decodeJwtPayload } from "@/app/lib/decode-jwt";
-import { Header } from "@/app/components/header";
-import { HomeShell } from "@/app/components/home-shell";
+import { cookies } from 'next/headers';
+
+import { Header } from '@/app/components/header';
+import { HomeShell } from '@/app/components/home-shell';
+import { AUTH_COOKIE_NAME } from '@/app/lib/auth-cookie';
+import { decodeJwtPayload } from '@/app/lib/decode-jwt';
 
 interface InternalUserJwtPayload {
-  email?: string;
+	email?: string;
 }
 
 export default async function HomePage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
-  const payload = token
-    ? decodeJwtPayload<InternalUserJwtPayload>(token)
-    : null;
+	const cookieStore = await cookies();
+	const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+	const payload = token ? decodeJwtPayload<InternalUserJwtPayload>(token) : null;
 
-  return (
-    <div className="d-flex flex-column vh-100">
-      <Header />
-      <HomeShell informerEmail={payload?.email ?? ""} />
-    </div>
-  );
+	return (
+		<div className='d-flex flex-column vh-100'>
+			<Header />
+			<HomeShell informerEmail={payload?.email ?? ''} />
+		</div>
+	);
 }

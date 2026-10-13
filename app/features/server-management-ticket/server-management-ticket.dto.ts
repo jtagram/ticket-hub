@@ -1,58 +1,58 @@
 export interface ValueListItem {
-  value: string;
-  label: string;
+	value: string;
+	label: string;
 }
 
 export type ValueListResponse = ValueListItem[];
 
 export interface ErrorResponse {
-  message?: string;
+	message?: string;
 }
 
 export interface FetchValueListResult {
-  ok: boolean;
-  data: ValueListResponse | ErrorResponse | null;
+	ok: boolean;
+	data: ValueListResponse | ErrorResponse | null;
 }
 
 export interface CreateServerManagementTicketPayload {
-  assignee: string;
-  subject: string;
-  description: string;
-  codeAnsible: string;
+	assignee: string;
+	subject: string;
+	description: string;
+	codeAnsible: string;
 }
 
 export interface PostResult {
-  ok: boolean;
-  data: ErrorResponse | null;
+	ok: boolean;
+	data: ErrorResponse | null;
 }
 
 export interface ServerManagementTicket {
-  id: number;
-  number: number;
-  informer: string;
-  assignee: string;
-  department: string;
-  subject: string;
-  status: "OPEN" | "IN_PROGRESS" | "APPROVED" | "REJECTED";
-  description: string;
-  codeAnsible: string;
-  response: string;
-  createdAt: string;
-  updatedAt: string;
+	id: number;
+	number: number;
+	informer: string;
+	assignee: string;
+	department: string;
+	subject: string;
+	status: 'OPEN' | 'IN_PROGRESS' | 'APPROVED' | 'REJECTED';
+	description: string;
+	codeAnsible: string;
+	response: string;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface FetchTicketsResult {
-  ok: boolean;
-  data: ServerManagementTicket[] | ErrorResponse | null;
+	ok: boolean;
+	data: ServerManagementTicket[] | ErrorResponse | null;
 }
 
 export interface FetchTicketResult {
-  ok: boolean;
-  status: number;
-  data: ServerManagementTicket | ErrorResponse | null;
+	ok: boolean;
+	status: number;
+	data: ServerManagementTicket | ErrorResponse | null;
 }
 
 export interface UpdateTicketResult {
-  ok: boolean;
-  data: ServerManagementTicket | ErrorResponse | null;
+	ok: boolean;
+	data: ServerManagementTicket | ErrorResponse | null;
 }

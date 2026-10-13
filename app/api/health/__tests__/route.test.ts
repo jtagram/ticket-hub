@@ -1,11 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { GET } from "../route";
+import { describe, expect, it } from 'vitest';
 
-describe("GET /api/health", () => {
-  it("returns ok", async () => {
-    const res = GET();
+import { GET } from '../route';
 
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ status: "ok" });
-  });
+describe('GET /api/health', () => {
+	it('returns ok', async () => {
+		const res = GET();
+
+		expect(res.status).toBe(200);
+		expect(await res.json()).toEqual({ status: 'ok' });
+	});
 });
