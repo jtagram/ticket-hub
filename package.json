@@ -9,7 +9,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write \"app/**/*.{ts,tsx}\" \"*.ts\"",
-    "lint": "eslint \"app/**/*.{ts,tsx}\" \"*.ts\""
+    "lint": "eslint \"app/**/*.{ts,tsx}\" \"*.ts\"",
+    "format:check": "prettier --check \"app/**/*.{ts,tsx}\" \"*.ts\""
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
