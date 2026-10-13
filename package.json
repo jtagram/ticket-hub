@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "format": "prettier --write \"app/**/*.{ts,tsx}\" \"*.ts\"",
+    "lint": "eslint \"app/**/*.{ts,tsx}\" \"*.ts\""
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
@@ -18,6 +20,7 @@
     "react-hook-form": "^7.89.0"
   },
   "devDependencies": {
+    "@eslint/js": "9.39.5",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -26,8 +29,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.1.2",
+    "eslint": "9.39.5",
+    "eslint-plugin-simple-import-sort": "14.0.0",
     "jsdom": "^30.1.2",
+    "prettier": "3.9.10",
     "typescript": "^5",
+    "typescript-eslint": "8.71.2",
     "vitest": "^5.0.3"
   }
 }
