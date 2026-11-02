@@ -102,8 +102,11 @@ export function KubectlCommandTicketForm({ informerEmail }: KubectlCommandTicket
 					className='mb-3'
 					controlId='assignee'
 				>
-					<Form.Label>Responsable</Form.Label>
-					<Form.Select {...register('assignee', { required: true })}>
+					<Form.Label className='required-label'>Responsable</Form.Label>
+					<Form.Select
+						aria-required='true'
+						{...register('assignee', { required: true })}
+					>
 						<option
 							value=''
 							disabled
@@ -148,8 +151,9 @@ export function KubectlCommandTicketForm({ informerEmail }: KubectlCommandTicket
 					className='mb-3'
 					controlId='subject'
 				>
-					<Form.Label>Asunto</Form.Label>
+					<Form.Label className='required-label'>Asunto</Form.Label>
 					<Form.Control
+						aria-required='true'
 						{...register('subject', {
 							required: 'El asunto es obligatorio.',
 							maxLength: { value: 500, message: 'Máximo 500 caracteres.' },
@@ -164,8 +168,9 @@ export function KubectlCommandTicketForm({ informerEmail }: KubectlCommandTicket
 					className='mb-3'
 					controlId='description'
 				>
-					<Form.Label>Descripción</Form.Label>
+					<Form.Label className='required-label'>Descripción</Form.Label>
 					<Form.Control
+						aria-required='true'
 						as='textarea'
 						rows={3}
 						{...register('description', {
@@ -182,17 +187,15 @@ export function KubectlCommandTicketForm({ informerEmail }: KubectlCommandTicket
 					className='mb-4'
 					controlId='kubectlCommand'
 				>
-					<Form.Label>Comando kubectl</Form.Label>
+					<Form.Label className='required-label'>Comando kubectl</Form.Label>
 					<Form.Control
+						aria-required='true'
 						as='textarea'
 						rows={3}
 						className='font-monospace'
 						placeholder='get pods -n default'
 						{...register('kubectlCommand', { required: true })}
 					/>
-					<Form.Text className='text-muted'>
-						No incluyas el prefijo &quot;kubectl&quot; — se agrega automáticamente al ejecutar.
-					</Form.Text>
 				</Form.Group>
 
 				{errors.root && <Alert variant='danger'>{errors.root.message}</Alert>}

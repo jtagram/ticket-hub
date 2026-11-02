@@ -188,10 +188,9 @@ describe('KubectlCommandTicketForm', () => {
 		expect(signal.aborted).toBe(true);
 	});
 
-	it('explains that the kubectl prefix must not be typed', () => {
+	it('shows a placeholder example in the kubectl command field', () => {
 		renderForm();
 
-		expect(screen.getByText(/No incluyas el prefijo "kubectl"/)).toBeInTheDocument();
 		expect(screen.getByLabelText('Comando kubectl')).toHaveAttribute(
 			'placeholder',
 			'get pods -n default',

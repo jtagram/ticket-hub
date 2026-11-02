@@ -64,8 +64,9 @@ export default function LoginPage() {
 							className='mb-3'
 							controlId='email'
 						>
-							<Form.Label>Correo electrónico</Form.Label>
+							<Form.Label className='required-label'>Correo electrónico</Form.Label>
 							<Form.Control
+								aria-required='true'
 								type='email'
 								required
 								autoComplete='email'
@@ -78,8 +79,9 @@ export default function LoginPage() {
 							className='mb-4'
 							controlId='password'
 						>
-							<Form.Label>Contraseña</Form.Label>
+							<Form.Label className='required-label'>Contraseña</Form.Label>
 							<Form.Control
+								aria-required='true'
 								type='password'
 								required
 								autoComplete='current-password'

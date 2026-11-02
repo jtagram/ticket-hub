@@ -133,8 +133,11 @@ export function DatabaseProvisioningTicketForm({
 					className='mb-3'
 					controlId='assignee'
 				>
-					<Form.Label>Responsable</Form.Label>
-					<Form.Select {...register('assignee', { required: true })}>
+					<Form.Label className='required-label'>Responsable</Form.Label>
+					<Form.Select
+						aria-required='true'
+						{...register('assignee', { required: true })}
+					>
 						<option
 							value=''
 							disabled
@@ -179,8 +182,9 @@ export function DatabaseProvisioningTicketForm({
 					className='mb-3'
 					controlId='subject'
 				>
-					<Form.Label>Asunto</Form.Label>
+					<Form.Label className='required-label'>Asunto</Form.Label>
 					<Form.Control
+						aria-required='true'
 						{...register('subject', {
 							required: 'El asunto es obligatorio.',
 							maxLength: { value: 500, message: 'Máximo 500 caracteres.' },
@@ -195,8 +199,9 @@ export function DatabaseProvisioningTicketForm({
 					className='mb-3'
 					controlId='description'
 				>
-					<Form.Label>Descripción</Form.Label>
+					<Form.Label className='required-label'>Descripción</Form.Label>
 					<Form.Control
+						aria-required='true'
 						as='textarea'
 						rows={3}
 						{...register('description', {
@@ -225,8 +230,11 @@ export function DatabaseProvisioningTicketForm({
 					className='mb-3'
 					controlId='dbDeployment'
 				>
-					<Form.Label>Deployment</Form.Label>
-					<Form.Select {...register('dbDeployment', { required: true })}>
+					<Form.Label className='required-label'>Deployment</Form.Label>
+					<Form.Select
+						aria-required='true'
+						{...register('dbDeployment', { required: true })}
+					>
 						<option
 							value=''
 							disabled
@@ -259,8 +267,9 @@ export function DatabaseProvisioningTicketForm({
 					className='mb-4'
 					controlId='newDbName'
 				>
-					<Form.Label>Nombre de la nueva base de datos</Form.Label>
+					<Form.Label className='required-label'>Nombre de la nueva base de datos</Form.Label>
 					<Form.Control
+						aria-required='true'
 						className='font-monospace'
 						{...register('newDbName', {
 							required: 'El nombre de la base de datos es obligatorio.',

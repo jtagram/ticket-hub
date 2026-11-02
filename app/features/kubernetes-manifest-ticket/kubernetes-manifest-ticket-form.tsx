@@ -114,8 +114,11 @@ export function KubernetesManifestTicketForm({ informerEmail }: KubernetesManife
 					className='mb-3'
 					controlId='assignee'
 				>
-					<Form.Label>Responsable</Form.Label>
-					<Form.Select {...register('assignee', { required: true })}>
+					<Form.Label className='required-label'>Responsable</Form.Label>
+					<Form.Select
+						aria-required='true'
+						{...register('assignee', { required: true })}
+					>
 						<option
 							value=''
 							disabled
@@ -160,8 +163,9 @@ export function KubernetesManifestTicketForm({ informerEmail }: KubernetesManife
 					className='mb-3'
 					controlId='subject'
 				>
-					<Form.Label>Asunto</Form.Label>
+					<Form.Label className='required-label'>Asunto</Form.Label>
 					<Form.Control
+						aria-required='true'
 						{...register('subject', {
 							required: 'El asunto es obligatorio.',
 							maxLength: { value: 500, message: 'Máximo 500 caracteres.' },
@@ -176,8 +180,9 @@ export function KubernetesManifestTicketForm({ informerEmail }: KubernetesManife
 					className='mb-3'
 					controlId='description'
 				>
-					<Form.Label>Descripción</Form.Label>
+					<Form.Label className='required-label'>Descripción</Form.Label>
 					<Form.Control
+						aria-required='true'
 						as='textarea'
 						rows={3}
 						{...register('description', {
@@ -206,8 +211,11 @@ export function KubernetesManifestTicketForm({ informerEmail }: KubernetesManife
 					className='mb-3'
 					controlId='action'
 				>
-					<Form.Label>Acción</Form.Label>
-					<Form.Select {...register('action', { required: true })}>
+					<Form.Label className='required-label'>Acción</Form.Label>
+					<Form.Select
+						aria-required='true'
+						{...register('action', { required: true })}
+					>
 						{ACTION_OPTIONS.map((option) => (
 							<option
 								key={option.value}
@@ -223,8 +231,9 @@ export function KubernetesManifestTicketForm({ informerEmail }: KubernetesManife
 					className='mb-4'
 					controlId='codeYaml'
 				>
-					<Form.Label>Manifiesto YAML</Form.Label>
+					<Form.Label className='required-label'>Manifiesto YAML</Form.Label>
 					<Form.Control
+						aria-required='true'
 						as='textarea'
 						rows={10}
 						className='font-monospace'

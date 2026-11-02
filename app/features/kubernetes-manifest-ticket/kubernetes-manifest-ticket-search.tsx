@@ -83,8 +83,9 @@ export function KubernetesManifestTicketSearch() {
 					className='flex-grow-1'
 					controlId='ticketNumber'
 				>
-					<Form.Label>Número de ticket</Form.Label>
+					<Form.Label className='required-label'>Número de ticket</Form.Label>
 					<Form.Control
+						aria-required='true'
 						type='number'
 						min={1}
 						required

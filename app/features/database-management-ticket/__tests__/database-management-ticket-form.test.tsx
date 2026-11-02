@@ -228,10 +228,9 @@ describe('DatabaseManagementTicketForm', () => {
 		expect(await screen.findByText('Deployments down')).toBeInTheDocument();
 	});
 
-	it('asks to pick a deployment before listing databases', () => {
+	it('does not list databases before a deployment is picked', () => {
 		renderForm();
 
-		expect(screen.getByText('Seleccioná un deployment primero.')).toBeInTheDocument();
 		expect(getDbNames).not.toHaveBeenCalled();
 	});
 
@@ -244,7 +243,6 @@ describe('DatabaseManagementTicketForm', () => {
 
 		expect(await screen.findByRole('option', { name: 'orders' })).toBeInTheDocument();
 		expect(getDbNames).toHaveBeenCalledWith('databases', 'pg-main', expect.any(AbortSignal));
-		expect(screen.queryByText('Seleccioná un deployment primero.')).not.toBeInTheDocument();
 	});
 
 	it('shows a loading message while the databases are loading', async () => {

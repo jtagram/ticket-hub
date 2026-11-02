@@ -169,8 +169,11 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 					className='mb-3'
 					controlId='assignee'
 				>
-					<Form.Label>Responsable</Form.Label>
-					<Form.Select {...register('assignee', { required: true })}>
+					<Form.Label className='required-label'>Responsable</Form.Label>
+					<Form.Select
+						aria-required='true'
+						{...register('assignee', { required: true })}
+					>
 						<option
 							value=''
 							disabled
@@ -215,8 +218,9 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 					className='mb-3'
 					controlId='subject'
 				>
-					<Form.Label>Asunto</Form.Label>
+					<Form.Label className='required-label'>Asunto</Form.Label>
 					<Form.Control
+						aria-required='true'
 						{...register('subject', {
 							required: 'El asunto es obligatorio.',
 							maxLength: { value: 500, message: 'Máximo 500 caracteres.' },
@@ -231,8 +235,9 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 					className='mb-3'
 					controlId='description'
 				>
-					<Form.Label>Descripción</Form.Label>
+					<Form.Label className='required-label'>Descripción</Form.Label>
 					<Form.Control
+						aria-required='true'
 						as='textarea'
 						rows={3}
 						{...register('description', {
@@ -261,8 +266,11 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 					className='mb-3'
 					controlId='dbDeployment'
 				>
-					<Form.Label>Deployment</Form.Label>
-					<Form.Select {...register('dbDeployment', { required: true })}>
+					<Form.Label className='required-label'>Deployment</Form.Label>
+					<Form.Select
+						aria-required='true'
+						{...register('dbDeployment', { required: true })}
+					>
 						<option
 							value=''
 							disabled
@@ -295,8 +303,11 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 					className='mb-4'
 					controlId='dbName'
 				>
-					<Form.Label>Base de datos</Form.Label>
-					<Form.Select {...register('dbName', { required: true })}>
+					<Form.Label className='required-label'>Base de datos</Form.Label>
+					<Form.Select
+						aria-required='true'
+						{...register('dbName', { required: true })}
+					>
 						<option
 							value=''
 							disabled
@@ -320,9 +331,6 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 							{dbNamesError}
 						</Alert>
 					)}
-					{!dbNamesError && !dbDeployment && (
-						<Form.Text className='text-muted'>Seleccioná un deployment primero.</Form.Text>
-					)}
 					{!dbNamesError && dbDeployment && dbNames === null && (
 						<Form.Text className='text-muted'>Cargando…</Form.Text>
 					)}
@@ -332,8 +340,9 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 					className='mb-4'
 					controlId='sqlCode'
 				>
-					<Form.Label>SQL a ejecutar</Form.Label>
+					<Form.Label className='required-label'>SQL a ejecutar</Form.Label>
 					<Form.Control
+						aria-required='true'
 						as='textarea'
 						rows={6}
 						className='font-monospace'
