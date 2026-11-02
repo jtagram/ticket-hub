@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { notifyError, notifySuccess } from '@/app/lib/notify';
+
 import {
 	createKubernetesManifestTicket,
 	getAssignees,
@@ -9,6 +11,7 @@ import {
 import { KubernetesManifestTicketForm } from '../kubernetes-manifest-ticket-form';
 
 vi.mock('../kubernetes-manifest-ticket.service');
+vi.mock('@/app/lib/notify');
 
 beforeEach(() => {
 	vi.mocked(getAssignees).mockResolvedValue([
@@ -91,7 +94,7 @@ describe('KubernetesManifestTicketForm', () => {
 		const user = await fillForm();
 		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
 
-		expect(await screen.findByText('Ticket creado correctamente.')).toBeInTheDocument();
+		await waitFor(() => expect(notifySuccess).toHaveBeenCalledWith('Ticket creado correctamente.'));
 		expect(createKubernetesManifestTicket).toHaveBeenCalledWith({
 			assignee: 'ana@corp.com',
 			subject: 'Add index',
@@ -112,28 +115,9 @@ describe('KubernetesManifestTicketForm', () => {
 		const user = await fillForm();
 		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
 
-		expect(await screen.findByText('Duplicated')).toBeInTheDocument();
-		expect(screen.queryByText('Ticket creado correctamente.')).not.toBeInTheDocument();
+		await waitFor(() => expect(notifyError).toHaveBeenCalledWith('Duplicated'));
+		expect(notifySuccess).not.toHaveBeenCalled();
 		expect(screen.getByLabelText('Asunto')).toHaveValue('Add index');
-	});
-
-	it('clears a previous success message when submitting again', async () => {
-		vi.mocked(createKubernetesManifestTicket)
-			.mockResolvedValueOnce(undefined)
-			.mockRejectedValueOnce(new Error('Duplicated'));
-		renderForm();
-
-		const user = await fillForm();
-		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
-		expect(await screen.findByText('Ticket creado correctamente.')).toBeInTheDocument();
-
-		await user.type(screen.getByLabelText('Asunto'), 'Again');
-		await user.type(screen.getByLabelText('Descripción'), 'Again');
-		await user.type(screen.getByLabelText('Manifiesto YAML'), 'kind: Service');
-		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
-
-		expect(await screen.findByText('Duplicated')).toBeInTheDocument();
-		expect(screen.queryByText('Ticket creado correctamente.')).not.toBeInTheDocument();
 	});
 
 	it('shows a submitting label while the request is pending', async () => {
@@ -211,7 +195,7 @@ describe('KubernetesManifestTicketForm', () => {
 		await user.selectOptions(screen.getByLabelText('Acción'), 'delete');
 		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
 
-		await screen.findByText('Ticket creado correctamente.');
+		await waitFor(() => expect(notifySuccess).toHaveBeenCalledWith('Ticket creado correctamente.'));
 		expect(createKubernetesManifestTicket).toHaveBeenCalledWith(
 			expect.objectContaining({ action: 'delete' }),
 		);
@@ -225,7 +209,7 @@ describe('KubernetesManifestTicketForm', () => {
 		await user.selectOptions(screen.getByLabelText('Acción'), 'create');
 		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
 
-		await screen.findByText('Ticket creado correctamente.');
+		await waitFor(() => expect(notifySuccess).toHaveBeenCalledWith('Ticket creado correctamente.'));
 		expect(screen.getByLabelText('Acción')).toHaveValue('create');
 	});
 });

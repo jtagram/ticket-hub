@@ -9,6 +9,7 @@ import {
 	getAssignees,
 } from '@/app/features/server-management-ticket/server-management-ticket.service';
 import { SERVER_MANAGEMENT_TICKET_DEPARTMENT } from '@/app/features/server-management-ticket/server-management-ticket-constants';
+import { notifyError, notifySuccess } from '@/app/lib/notify';
 
 interface ValueListItem {
 	value: string;
@@ -29,14 +30,11 @@ interface ServerManagementTicketFormProps {
 export function ServerManagementTicketForm({ informerEmail }: ServerManagementTicketFormProps) {
 	const [assignees, setAssignees] = useState<ValueListItem[] | null>(null);
 	const [assigneesError, setAssigneesError] = useState<string | null>(null);
-	const [success, setSuccess] = useState<string | null>(null);
 
 	const {
 		register,
 		handleSubmit,
 		resetField,
-		setError,
-		clearErrors,
 		formState: { errors, isSubmitting, isValid },
 	} = useForm<ServerManagementTicketFormValues>({
 		mode: 'onChange',
@@ -66,18 +64,15 @@ export function ServerManagementTicketForm({ informerEmail }: ServerManagementTi
 	}, []);
 
 	const onSubmit = handleSubmit(async (data) => {
-		clearErrors('root');
-		setSuccess(null);
-
 		try {
 			await createServerManagementTicket(data);
 
-			setSuccess('Ticket creado correctamente.');
+			notifySuccess('Ticket creado correctamente.');
 			resetField('subject');
 			resetField('description');
 			resetField('codeAnsible');
 		} catch (err) {
-			setError('root', { message: (err as Error).message });
+			notifyError((err as Error).message);
 		}
 	});
 
@@ -196,9 +191,6 @@ export function ServerManagementTicketForm({ informerEmail }: ServerManagementTi
 						{...register('codeAnsible', { required: true })}
 					/>
 				</Form.Group>
-
-				{errors.root && <Alert variant='danger'>{errors.root.message}</Alert>}
-				{success && <Alert variant='success'>{success}</Alert>}
 
 				<Button
 					type='submit'

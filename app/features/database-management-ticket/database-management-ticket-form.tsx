@@ -14,6 +14,7 @@ import {
 	DATABASE_MANAGEMENT_TICKET_DEPARTMENT,
 	DATABASE_MANAGEMENT_TICKET_NAMESPACE,
 } from '@/app/features/database-management-ticket/database-management-ticket-constants';
+import { notifyError, notifySuccess } from '@/app/lib/notify';
 
 interface ValueListItem {
 	value: string;
@@ -42,15 +43,12 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 
 	const [dbNames, setDbNames] = useState<ValueListItem[] | null>(null);
 	const [dbNamesError, setDbNamesError] = useState<string | null>(null);
-	const [success, setSuccess] = useState<string | null>(null);
 
 	const {
 		register,
 		handleSubmit,
 		control,
 		resetField,
-		setError,
-		clearErrors,
 		formState: { errors, isSubmitting, isValid },
 	} = useForm<DatabaseManagementTicketFormValues>({
 		mode: 'onChange',
@@ -133,18 +131,15 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 	}, [dbDeployment, resetField]);
 
 	const onSubmit = handleSubmit(async (data) => {
-		clearErrors('root');
-		setSuccess(null);
-
 		try {
 			await createDatabaseManagementTicket(data);
 
-			setSuccess('Ticket creado correctamente.');
+			notifySuccess('Ticket creado correctamente.');
 			resetField('subject');
 			resetField('description');
 			resetField('sqlCode');
 		} catch (err) {
-			setError('root', { message: (err as Error).message });
+			notifyError((err as Error).message);
 		}
 	});
 
@@ -349,9 +344,6 @@ export function DatabaseManagementTicketForm({ informerEmail }: DatabaseManageme
 						{...register('sqlCode', { required: true })}
 					/>
 				</Form.Group>
-
-				{errors.root && <Alert variant='danger'>{errors.root.message}</Alert>}
-				{success && <Alert variant='success'>{success}</Alert>}
 
 				<Button
 					type='submit'

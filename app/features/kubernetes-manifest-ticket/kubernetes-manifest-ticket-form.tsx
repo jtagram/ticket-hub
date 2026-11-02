@@ -13,6 +13,7 @@ import {
 	KUBERNETES_MANIFEST_TICKET_DEPARTMENT,
 	KUBERNETES_MANIFEST_TICKET_NAMESPACE,
 } from '@/app/features/kubernetes-manifest-ticket/kubernetes-manifest-ticket-constants';
+import { notifyError, notifySuccess } from '@/app/lib/notify';
 
 interface ValueListItem {
 	value: string;
@@ -40,14 +41,11 @@ interface KubernetesManifestTicketFormProps {
 export function KubernetesManifestTicketForm({ informerEmail }: KubernetesManifestTicketFormProps) {
 	const [assignees, setAssignees] = useState<ValueListItem[] | null>(null);
 	const [assigneesError, setAssigneesError] = useState<string | null>(null);
-	const [success, setSuccess] = useState<string | null>(null);
 
 	const {
 		register,
 		handleSubmit,
 		resetField,
-		setError,
-		clearErrors,
 		formState: { errors, isSubmitting, isValid },
 	} = useForm<KubernetesManifestTicketFormValues>({
 		mode: 'onChange',
@@ -78,18 +76,15 @@ export function KubernetesManifestTicketForm({ informerEmail }: KubernetesManife
 	}, []);
 
 	const onSubmit = handleSubmit(async (data) => {
-		clearErrors('root');
-		setSuccess(null);
-
 		try {
 			await createKubernetesManifestTicket(data);
 
-			setSuccess('Ticket creado correctamente.');
+			notifySuccess('Ticket creado correctamente.');
 			resetField('subject');
 			resetField('description');
 			resetField('codeYaml');
 		} catch (err) {
-			setError('root', { message: (err as Error).message });
+			notifyError((err as Error).message);
 		}
 	});
 
@@ -240,9 +235,6 @@ export function KubernetesManifestTicketForm({ informerEmail }: KubernetesManife
 						{...register('codeYaml', { required: true })}
 					/>
 				</Form.Group>
-
-				{errors.root && <Alert variant='danger'>{errors.root.message}</Alert>}
-				{success && <Alert variant='success'>{success}</Alert>}
 
 				<Button
 					type='submit'

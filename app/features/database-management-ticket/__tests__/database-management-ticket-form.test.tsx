@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { notifyError, notifySuccess } from '@/app/lib/notify';
+
 import {
 	createDatabaseManagementTicket,
 	getAssignees,
@@ -11,6 +13,7 @@ import {
 import { DatabaseManagementTicketForm } from '../database-management-ticket-form';
 
 vi.mock('../database-management-ticket.service');
+vi.mock('@/app/lib/notify');
 
 beforeEach(() => {
 	vi.mocked(getAssignees).mockResolvedValue([
@@ -106,7 +109,7 @@ describe('DatabaseManagementTicketForm', () => {
 		const user = await fillForm();
 		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
 
-		expect(await screen.findByText('Ticket creado correctamente.')).toBeInTheDocument();
+		await waitFor(() => expect(notifySuccess).toHaveBeenCalledWith('Ticket creado correctamente.'));
 		expect(createDatabaseManagementTicket).toHaveBeenCalledWith({
 			assignee: 'ana@corp.com',
 			subject: 'Add index',
@@ -130,28 +133,9 @@ describe('DatabaseManagementTicketForm', () => {
 		const user = await fillForm();
 		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
 
-		expect(await screen.findByText('Duplicated')).toBeInTheDocument();
-		expect(screen.queryByText('Ticket creado correctamente.')).not.toBeInTheDocument();
+		await waitFor(() => expect(notifyError).toHaveBeenCalledWith('Duplicated'));
+		expect(notifySuccess).not.toHaveBeenCalled();
 		expect(screen.getByLabelText('Asunto')).toHaveValue('Add index');
-	});
-
-	it('clears a previous success message when submitting again', async () => {
-		vi.mocked(createDatabaseManagementTicket)
-			.mockResolvedValueOnce(undefined)
-			.mockRejectedValueOnce(new Error('Duplicated'));
-		renderForm();
-
-		const user = await fillForm();
-		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
-		expect(await screen.findByText('Ticket creado correctamente.')).toBeInTheDocument();
-
-		await user.type(screen.getByLabelText('Asunto'), 'Again');
-		await user.type(screen.getByLabelText('Descripción'), 'Again');
-		await user.type(screen.getByLabelText('SQL a ejecutar'), 'select 2');
-		await user.click(screen.getByRole('button', { name: 'Solicitar' }));
-
-		expect(await screen.findByText('Duplicated')).toBeInTheDocument();
-		expect(screen.queryByText('Ticket creado correctamente.')).not.toBeInTheDocument();
 	});
 
 	it('shows a submitting label while the request is pending', async () => {

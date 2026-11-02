@@ -13,6 +13,7 @@ import {
 	DATABASE_PROVISIONING_TICKET_DEPARTMENT,
 	DATABASE_PROVISIONING_TICKET_NAMESPACE,
 } from '@/app/features/database-provisioning-ticket/database-provisioning-ticket-constants';
+import { notifyError, notifySuccess } from '@/app/lib/notify';
 
 interface ValueListItem {
 	value: string;
@@ -39,14 +40,11 @@ export function DatabaseProvisioningTicketForm({
 
 	const [deployments, setDeployments] = useState<ValueListItem[] | null>(null);
 	const [deploymentsError, setDeploymentsError] = useState<string | null>(null);
-	const [success, setSuccess] = useState<string | null>(null);
 
 	const {
 		register,
 		handleSubmit,
 		resetField,
-		setError,
-		clearErrors,
 		formState: { errors, isSubmitting, isValid },
 	} = useForm<DatabaseProvisioningTicketFormValues>({
 		mode: 'onChange',
@@ -97,18 +95,15 @@ export function DatabaseProvisioningTicketForm({
 	}, []);
 
 	const onSubmit = handleSubmit(async (data) => {
-		clearErrors('root');
-		setSuccess(null);
-
 		try {
 			await createDatabaseProvisioningTicket(data);
 
-			setSuccess('Ticket creado correctamente.');
+			notifySuccess('Ticket creado correctamente.');
 			resetField('subject');
 			resetField('description');
 			resetField('newDbName');
 		} catch (err) {
-			setError('root', { message: (err as Error).message });
+			notifyError((err as Error).message);
 		}
 	});
 
@@ -285,9 +280,6 @@ export function DatabaseProvisioningTicketForm({
 						<Form.Text className='text-danger'>{errors.newDbName.message}</Form.Text>
 					)}
 				</Form.Group>
-
-				{errors.root && <Alert variant='danger'>{errors.root.message}</Alert>}
-				{success && <Alert variant='success'>{success}</Alert>}
 
 				<Button
 					type='submit'

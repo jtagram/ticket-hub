@@ -9,6 +9,7 @@ import {
 	getAssignees,
 } from '@/app/features/kubectl-command-ticket/kubectl-command-ticket.service';
 import { KUBECTL_COMMAND_TICKET_DEPARTMENT } from '@/app/features/kubectl-command-ticket/kubectl-command-ticket-constants';
+import { notifyError, notifySuccess } from '@/app/lib/notify';
 
 interface ValueListItem {
 	value: string;
@@ -29,14 +30,11 @@ interface KubectlCommandTicketFormProps {
 export function KubectlCommandTicketForm({ informerEmail }: KubectlCommandTicketFormProps) {
 	const [assignees, setAssignees] = useState<ValueListItem[] | null>(null);
 	const [assigneesError, setAssigneesError] = useState<string | null>(null);
-	const [success, setSuccess] = useState<string | null>(null);
 
 	const {
 		register,
 		handleSubmit,
 		resetField,
-		setError,
-		clearErrors,
 		formState: { errors, isSubmitting, isValid },
 	} = useForm<KubectlCommandTicketFormValues>({
 		mode: 'onChange',
@@ -66,18 +64,15 @@ export function KubectlCommandTicketForm({ informerEmail }: KubectlCommandTicket
 	}, []);
 
 	const onSubmit = handleSubmit(async (data) => {
-		clearErrors('root');
-		setSuccess(null);
-
 		try {
 			await createKubectlCommandTicket(data);
 
-			setSuccess('Ticket creado correctamente.');
+			notifySuccess('Ticket creado correctamente.');
 			resetField('subject');
 			resetField('description');
 			resetField('kubectlCommand');
 		} catch (err) {
-			setError('root', { message: (err as Error).message });
+			notifyError((err as Error).message);
 		}
 	});
 
@@ -197,9 +192,6 @@ export function KubectlCommandTicketForm({ informerEmail }: KubectlCommandTicket
 						{...register('kubectlCommand', { required: true })}
 					/>
 				</Form.Group>
-
-				{errors.root && <Alert variant='danger'>{errors.root.message}</Alert>}
-				{success && <Alert variant='success'>{success}</Alert>}
 
 				<Button
 					type='submit'
