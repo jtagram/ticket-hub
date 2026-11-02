@@ -72,7 +72,7 @@ describe('HomeShell', () => {
 		render(<HomeShell informerEmail='informer@corp.com' />);
 
 		for (const item of NAV_ITEMS) {
-			expect(screen.getByRole('button', { name: item.label })).toBeInTheDocument();
+			expect(screen.getByRole('tab', { name: item.label })).toBeInTheDocument();
 		}
 	});
 
@@ -85,7 +85,7 @@ describe('HomeShell', () => {
 	it.each(NAV_ITEMS)('shows the matching view when selecting $label', async (item) => {
 		render(<HomeShell informerEmail='informer@corp.com' />);
 
-		await userEvent.setup().click(screen.getByRole('button', { name: item.label }));
+		await userEvent.setup().click(screen.getByRole('tab', { name: item.label }));
 
 		expect(screen.getByText(expectedStub(item.id))).toBeInTheDocument();
 		expect(screen.getAllByText(/^stub:/)).toHaveLength(1);

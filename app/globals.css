@@ -25,3 +25,28 @@ body {
   background-color: #000;
   color: #fff;
 }
+
+.required-label::after {
+  content: ' *';
+  content: ' *' / '';
+  color: var(--bs-danger);
+}
+
+.sidebar-accordion {
+  --bs-accordion-bg: transparent;
+  --bs-accordion-btn-bg: transparent;
+  --bs-accordion-active-bg: transparent;
+  --bs-accordion-active-color: inherit;
+  --bs-accordion-btn-padding-x: 0.5rem;
+  --bs-accordion-btn-padding-y: 0.5rem;
+  --bs-accordion-body-padding-x: 0;
+  --bs-accordion-body-padding-y: 0.25rem;
+  --bs-accordion-btn-focus-box-shadow: none;
+}
+
+.sidebar-accordion .accordion-button {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+}
