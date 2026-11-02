@@ -2,8 +2,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { NAV_ITEMS } from '@/app/lib/nav-items';
-
 import { HomeShell } from '../home-shell';
 
 vi.mock('@/app/features/database-management-ticket/database-management-ticket-form', () => ({
@@ -62,6 +60,36 @@ vi.mock('@/app/features/kubectl-command-ticket/kubectl-command-ticket-search', (
 	KubectlCommandTicketSearch: () => <div>stub:search-kubectl-command-ticket</div>,
 }));
 
+const NAV_ITEMS = [
+	{ id: 'request-database-management', label: 'Solicitar gestión de base de datos' },
+	{ id: 'view-database-management-tickets', label: 'Ver ticket de gestión de base de datos' },
+	{ id: 'search-database-management-ticket', label: 'Buscar ticket de gestión de base de datos' },
+	{ id: 'request-database-provisioning', label: 'Solicitar aprovisionamiento de base de datos' },
+	{
+		id: 'view-database-provisioning-tickets',
+		label: 'Ver tickets de aprovisionamiento de base de datos',
+	},
+	{
+		id: 'search-database-provisioning-ticket',
+		label: 'Buscar ticket de aprovisionamiento de base de datos',
+	},
+	{ id: 'request-server-management', label: 'Solicitar gestión de servidor' },
+	{ id: 'view-server-management-tickets', label: 'Ver tickets de gestión de servidor' },
+	{ id: 'search-server-management-ticket', label: 'Buscar ticket de gestión de servidor' },
+	{ id: 'request-kubernetes-manifest', label: 'Solicitar gestión de manifiestos de Kubernetes' },
+	{
+		id: 'view-kubernetes-manifest-tickets',
+		label: 'Ver tickets de gestión de manifiestos de Kubernetes',
+	},
+	{
+		id: 'search-kubernetes-manifest-ticket',
+		label: 'Buscar ticket de gestión de manifiestos de Kubernetes',
+	},
+	{ id: 'request-kubectl-command', label: 'Solicitar ejecución de comando kubectl' },
+	{ id: 'view-kubectl-command-tickets', label: 'Ver tickets de ejecución de comando kubectl' },
+	{ id: 'search-kubectl-command-ticket', label: 'Buscar ticket de ejecución de comando kubectl' },
+];
+
 // Forms receive the informer email, so their stub text carries it.
 function expectedStub(id: string) {
 	return id.startsWith('request-') ? `stub:${id}:informer@corp.com` : `stub:${id}`;
@@ -73,6 +101,14 @@ describe('HomeShell', () => {
 
 		for (const item of NAV_ITEMS) {
 			expect(screen.getByRole('tab', { name: item.label })).toBeInTheDocument();
+		}
+	});
+
+	it('renders every accordion group', () => {
+		render(<HomeShell informerEmail='informer@corp.com' />);
+
+		for (const title of ['Base de datos', 'Servidor', 'Kubernetes']) {
+			expect(screen.getByRole('button', { name: title })).toBeInTheDocument();
 		}
 	});
 
