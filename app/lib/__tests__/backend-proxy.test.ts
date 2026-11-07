@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AUTH_COOKIE_NAME } from '@/app/lib/auth-cookie';
+import { apiError, apiOk, apiResponse } from '@/test/mocks/ticket-hub';
 
 import {
 	extractErrorMessage,
@@ -22,16 +23,13 @@ afterEach(() => {
 });
 
 describe('extractErrorMessage', () => {
-	it('returns the string message', () => {
-		expect(extractErrorMessage({ message: 'boom' }, 'fb')).toBe('boom');
+	it('returns the envelope msg', () => {
+		expect(extractErrorMessage({ msg: 'boom' }, 'fb')).toBe('boom');
 	});
 
-	it('joins array messages', () => {
-		expect(extractErrorMessage({ message: ['a', 'b'] }, 'fb')).toBe('a, b');
-	});
-
-	it('falls back when there is no message or no body', () => {
+	it('falls back when there is no msg or no body', () => {
 		expect(extractErrorMessage({}, 'fb')).toBe('fb');
+		expect(extractErrorMessage({ msg: '' }, 'fb')).toBe('fb');
 		expect(extractErrorMessage(null, 'fb')).toBe('fb');
 		expect(extractErrorMessage(undefined, 'fb')).toBe('fb');
 	});
@@ -92,18 +90,15 @@ describe('readBackendBody', () => {
 });
 
 describe('forwardBackendResponse', () => {
-	it('passes through a successful JSON body and status', async () => {
-		const res = await forwardBackendResponse(new Response('{"data":[1]}', { status: 201 }), 'fb');
+	it('unwraps the envelope data and keeps the status', async () => {
+		const res = await forwardBackendResponse(apiOk([{ number: 1 }], 201), 'fb');
 
 		expect(res.status).toBe(201);
-		expect(await res.json()).toEqual({ data: [1] });
+		expect(await res.json()).toEqual([{ number: 1 }]);
 	});
 
-	it("maps backend errors to the message with the backend's status", async () => {
-		const res = await forwardBackendResponse(
-			new Response('{"message":["x","y"]}', { status: 400 }),
-			'fb',
-		);
+	it("maps envelope errors to { message } with the backend's status", async () => {
+		const res = await forwardBackendResponse(apiError('x, y', 400), 'fb');
 
 		expect(res.status).toBe(400);
 		expect(await res.json()).toEqual({ message: 'x, y' });
@@ -121,5 +116,17 @@ describe('forwardBackendResponse', () => {
 
 		expect(res.status).toBe(502);
 		expect(await res.json()).toEqual({ message: 'fb' });
+	});
+
+	it('returns 502 when an OK body is not an envelope or has no data', async () => {
+		for (const body of [
+			{ data: [1] },
+			{ ok: true, msg: 'OK', data: null },
+			{ ok: false, msg: 'no', data: null },
+		]) {
+			const res = await forwardBackendResponse(apiResponse(body), 'fb');
+
+			expect(res.status).toBe(502);
+		}
 	});
 });

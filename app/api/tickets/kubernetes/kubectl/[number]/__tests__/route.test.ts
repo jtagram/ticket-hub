@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { apiResponse, jsonRequest, routeParams } from '@/test/mocks/ticket-hub';
+import { apiError, apiOk, apiResponse, jsonRequest, routeParams } from '@/test/mocks/ticket-hub';
 
 import { GET, PATCH } from '../route';
 
@@ -46,7 +46,7 @@ describe('GET /api/tickets/kubernetes/kubectl/[number]', () => {
 	});
 
 	it('forwards the backend error status and message', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: 'Not found' }, 404));
+		fetchMock.mockResolvedValue(apiError('Not found', 404));
 
 		const res = await GET(jsonRequest(URL, 'GET'), routeParams('12'));
 
@@ -54,8 +54,8 @@ describe('GET /api/tickets/kubernetes/kubectl/[number]', () => {
 		expect(await res.json()).toEqual({ message: 'Not found' });
 	});
 
-	it('joins array messages from the backend', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: ['one', 'two'] }, 400));
+	it('forwards the joined validation message', async () => {
+		fetchMock.mockResolvedValue(apiError('one, two', 400));
 
 		const res = await GET(jsonRequest(URL, 'GET'), routeParams('12'));
 
@@ -72,7 +72,7 @@ describe('GET /api/tickets/kubernetes/kubectl/[number]', () => {
 	});
 
 	it('proxies the ticket for the requested number with the bearer token', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ number: 12 }));
+		fetchMock.mockResolvedValue(apiOk({ number: 12 }));
 
 		const res = await GET(jsonRequest(URL, 'GET'), routeParams('12'));
 
@@ -136,7 +136,7 @@ describe('PATCH /api/tickets/kubernetes/kubectl/[number]', () => {
 	it.each(['approve', 'reject'])(
 		'calls the backend %s endpoint with PATCH and the bearer token',
 		async (action) => {
-			fetchMock.mockResolvedValue(apiResponse({ number: 12, status: 'X' }));
+			fetchMock.mockResolvedValue(apiOk({ number: 12, status: 'X' }));
 
 			const res = await PATCH(jsonRequest(URL, 'PATCH', { action }), routeParams('12'));
 
@@ -162,7 +162,7 @@ describe('PATCH /api/tickets/kubernetes/kubectl/[number]', () => {
 	});
 
 	it('forwards the backend error status and message', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: 'Conflict' }, 409));
+		fetchMock.mockResolvedValue(apiError('Conflict', 409));
 
 		const res = await PATCH(jsonRequest(URL, 'PATCH', { action: 'approve' }), routeParams('12'));
 
@@ -170,8 +170,8 @@ describe('PATCH /api/tickets/kubernetes/kubectl/[number]', () => {
 		expect(await res.json()).toEqual({ message: 'Conflict' });
 	});
 
-	it('joins array messages from the backend', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: ['one', 'two'] }, 400));
+	it('forwards the joined validation message', async () => {
+		fetchMock.mockResolvedValue(apiError('one, two', 400));
 
 		const res = await PATCH(jsonRequest(URL, 'PATCH', { action: 'reject' }), routeParams('12'));
 

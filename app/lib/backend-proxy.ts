@@ -1,23 +1,18 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+import type { ApiEnvelope } from '@/app/lib/api-envelope';
 import { AUTH_COOKIE_NAME } from '@/app/lib/auth-cookie';
-
-export interface BackendErrorBody {
-	message?: string | string[];
-}
 
 /** Status returned when a backend answers successfully but its body is not valid JSON. */
 export const UNREADABLE_BACKEND_BODY_STATUS = 502;
 
+/** Error message carried by the envelope's `msg`, or `fallback` when it is missing or empty. */
 export function extractErrorMessage(
-	body: BackendErrorBody | null | undefined,
+	envelope: Partial<ApiEnvelope<unknown>> | null | undefined,
 	fallback: string,
 ): string {
-	if (Array.isArray(body?.message)) {
-		return body.message.join(', ');
-	}
-	return body?.message ?? fallback;
+	return envelope?.msg || fallback;
 }
 
 export type AuthResult =
@@ -52,27 +47,31 @@ export async function readBackendBody<T>(source: Pick<Response, 'json'>): Promis
 }
 
 /**
- * Translates a backend response into the route response, preserving the
- * backend's status. A non-JSON body never throws: errors fall back to
- * `fallback` with the backend's status; an OK status with an unreadable body
- * becomes a 502.
+ * Unwraps a backend `{ ok, msg, data }` envelope into the browser-facing route
+ * response, preserving the backend's status. Success answers with `data` alone;
+ * errors answer `{ message: msg }`. A non-JSON or malformed body never throws:
+ * errors fall back to `fallback` with the backend's status; an OK status with an
+ * unreadable body (or `ok: false`, or no `data`) becomes a 502.
  */
 export async function forwardBackendResponse(
 	backendResponse: Response,
 	fallback: string,
 ): Promise<NextResponse> {
-	const data = await readBackendBody<BackendErrorBody>(backendResponse);
+	const envelope = await readBackendBody<Partial<ApiEnvelope<unknown>>>(backendResponse);
 
 	if (!backendResponse.ok) {
 		return NextResponse.json(
-			{ message: extractErrorMessage(data, fallback) },
+			{ message: extractErrorMessage(envelope, fallback) },
 			{ status: backendResponse.status },
 		);
 	}
 
-	if (data === null) {
-		return NextResponse.json({ message: fallback }, { status: UNREADABLE_BACKEND_BODY_STATUS });
+	if (!envelope || envelope.ok !== true || envelope.data === undefined || envelope.data === null) {
+		return NextResponse.json(
+			{ message: extractErrorMessage(envelope, fallback) },
+			{ status: UNREADABLE_BACKEND_BODY_STATUS },
+		);
 	}
 
-	return NextResponse.json(data, { status: backendResponse.status });
+	return NextResponse.json(envelope.data, { status: backendResponse.status });
 }

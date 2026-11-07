@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { apiResponse, fakeJwt, jsonRequest } from '@/test/mocks/ticket-hub';
+import { apiError, apiOk, apiResponse, fakeJwt, jsonRequest } from '@/test/mocks/ticket-hub';
 
 import { GET, POST } from '../route';
 
@@ -78,7 +78,7 @@ describe('POST /api/tickets/database/management', () => {
 	});
 
 	it('forwards the backend error status and message', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: 'Forbidden' }, 403));
+		fetchMock.mockResolvedValue(apiError('Forbidden', 403));
 
 		const res = await POST(jsonRequest(URL, 'POST', validBody));
 
@@ -86,8 +86,8 @@ describe('POST /api/tickets/database/management', () => {
 		expect(await res.json()).toEqual({ message: 'Forbidden' });
 	});
 
-	it('joins array messages from the backend', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: ['one', 'two'] }, 400));
+	it('forwards the joined validation message', async () => {
+		fetchMock.mockResolvedValue(apiError('one, two', 400));
 
 		const res = await POST(jsonRequest(URL, 'POST', validBody));
 
@@ -105,7 +105,7 @@ describe('POST /api/tickets/database/management', () => {
 	});
 
 	it('sets informer and fixed fields server-side and ignores spoofed ones', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ number: 7 }, 201));
+		fetchMock.mockResolvedValue(apiOk({ number: 7 }, 201));
 
 		const res = await POST(
 			jsonRequest(URL, 'POST', {
@@ -176,7 +176,7 @@ describe('GET /api/tickets/database/management', () => {
 	});
 
 	it('forwards the backend error status and message', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: 'Forbidden' }, 403));
+		fetchMock.mockResolvedValue(apiError('Forbidden', 403));
 
 		const res = await GET();
 
@@ -184,8 +184,8 @@ describe('GET /api/tickets/database/management', () => {
 		expect(await res.json()).toEqual({ message: 'Forbidden' });
 	});
 
-	it('joins array messages from the backend', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: ['one', 'two'] }, 400));
+	it('forwards the joined validation message', async () => {
+		fetchMock.mockResolvedValue(apiError('one, two', 400));
 
 		const res = await GET();
 
@@ -204,7 +204,7 @@ describe('GET /api/tickets/database/management', () => {
 	});
 
 	it('proxies the ticket list with the bearer token', async () => {
-		fetchMock.mockResolvedValue(apiResponse([{ number: 1 }, { number: 2 }]));
+		fetchMock.mockResolvedValue(apiOk([{ number: 1 }, { number: 2 }]));
 
 		const res = await GET();
 

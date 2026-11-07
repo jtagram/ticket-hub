@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { apiResponse, jsonRequest } from '@/test/mocks/ticket-hub';
+import { apiError, apiOk, apiResponse, jsonRequest } from '@/test/mocks/ticket-hub';
 
 import { GET } from '../route';
 
@@ -56,7 +56,7 @@ describe('GET /api/value-lists/database-deployments', () => {
 	});
 
 	it('forwards the backend error status and message', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: 'Forbidden' }, 403));
+		fetchMock.mockResolvedValue(apiError('Forbidden', 403));
 
 		const res = await GET(jsonRequest(URL, 'GET'));
 
@@ -64,8 +64,8 @@ describe('GET /api/value-lists/database-deployments', () => {
 		expect(await res.json()).toEqual({ message: 'Forbidden' });
 	});
 
-	it('joins array messages from the backend', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: ['one', 'two'] }, 400));
+	it('forwards the joined validation message', async () => {
+		fetchMock.mockResolvedValue(apiError('one, two', 400));
 
 		const res = await GET(jsonRequest(URL, 'GET'));
 
@@ -86,7 +86,7 @@ describe('GET /api/value-lists/database-deployments', () => {
 
 	it('proxies the list with the bearer token', async () => {
 		const list = [{ value: 'pg-main', label: 'pg-main' }];
-		fetchMock.mockResolvedValue(apiResponse(list));
+		fetchMock.mockResolvedValue(apiOk(list));
 
 		const res = await GET(jsonRequest(URL, 'GET'));
 
@@ -99,7 +99,7 @@ describe('GET /api/value-lists/database-deployments', () => {
 	});
 
 	it('URL-encodes the namespace sent to the backend', async () => {
-		fetchMock.mockResolvedValue(apiResponse([]));
+		fetchMock.mockResolvedValue(apiOk([]));
 
 		await GET(
 			jsonRequest(

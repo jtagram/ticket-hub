@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { apiResponse } from '@/test/mocks/ticket-hub';
+import { apiError, apiOk, apiResponse } from '@/test/mocks/ticket-hub';
 
 import { GET } from '../route';
 
@@ -42,7 +42,7 @@ describe('GET /api/value-lists/assignees', () => {
 	});
 
 	it('forwards the backend error status and message', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: 'Forbidden' }, 403));
+		fetchMock.mockResolvedValue(apiError('Forbidden', 403));
 
 		const res = await GET();
 
@@ -50,8 +50,8 @@ describe('GET /api/value-lists/assignees', () => {
 		expect(await res.json()).toEqual({ message: 'Forbidden' });
 	});
 
-	it('joins array messages from the backend', async () => {
-		fetchMock.mockResolvedValue(apiResponse({ message: ['one', 'two'] }, 400));
+	it('forwards the joined validation message', async () => {
+		fetchMock.mockResolvedValue(apiError('one, two', 400));
 
 		const res = await GET();
 
@@ -72,7 +72,7 @@ describe('GET /api/value-lists/assignees', () => {
 
 	it('proxies the list with the bearer token', async () => {
 		const list = [{ value: 'ana@corp.com', label: 'Ana' }];
-		fetchMock.mockResolvedValue(apiResponse(list));
+		fetchMock.mockResolvedValue(apiOk(list));
 
 		const res = await GET();
 
